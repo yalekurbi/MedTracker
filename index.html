@@ -3,1686 +3,779 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MedTracker DEMO</title>
+<title>MedTracker – DEMO</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --blue: #0090FF;
-    --blue-dark: #0070CC;
-    --blue-light: #E0F0FF;
-    --blue-pale: #F0F7FF;
-    --green: #22C55E;
-    --green-light: #DCFCE7;
-    --red: #EF4444;
-    --red-light: #FEE2E2;
-    --orange: #F59E0B;
-    --orange-light: #FEF3C7;
-    --text: #1E293B;
-    --text-muted: #64748B;
-    --text-light: #94A3B8;
-    --border: #E2E8F0;
-    --bg: #F8FAFC;
-    --white: #FFFFFF;
-    --sidebar-w: 260px;
-    --radius: 14px;
-    --radius-sm: 8px;
-    --shadow: 0 4px 24px rgba(0,144,255,0.08);
-    --shadow-md: 0 8px 32px rgba(0,0,0,0.12);
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Nunito Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* ─── VIEWS ─────────────────────────────── */
-  .view { display: none; }
-  .view.active { display: block; }
-
-  /* ─── LOGIN PAGE ─────────────────────────── */
-  #login-view {
-    min-height: 100vh;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(145deg, #E8F4FF 0%, #F0F9FF 50%, #E0EDFF 100%);
-    position: relative;
-    overflow: hidden;
-  }
-  #login-view.active { display: flex; }
-  #login-view::before {
-    content: '';
-    position: absolute;
-    width: 600px; height: 600px;
-    background: radial-gradient(circle, rgba(0,144,255,0.08) 0%, transparent 70%);
-    top: -100px; right: -100px;
-  }
-  #login-view::after {
-    content: '';
-    position: absolute;
-    width: 400px; height: 400px;
-    background: radial-gradient(circle, rgba(0,144,255,0.06) 0%, transparent 70%);
-    bottom: -50px; left: -50px;
-  }
-
-  .login-card {
-    background: var(--white);
-    border-radius: 24px;
-    padding: 48px 44px;
-    width: 100%;
-    max-width: 440px;
-    box-shadow: 0 20px 60px rgba(0,144,255,0.12), 0 4px 16px rgba(0,0,0,0.06);
-    position: relative;
-    z-index: 1;
-    animation: slideUp 0.5s ease;
-  }
-
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .logo-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 36px;
-  }
-
-  .logo-big {
-    font-family: 'Nunito', sans-serif;
-    font-size: 64px;
-    font-weight: 900;
-    color: var(--blue);
-    line-height: 1;
-    letter-spacing: -2px;
-  }
-
-  .logo-badge {
-    background: var(--blue);
-    color: white;
-    font-family: 'Nunito', sans-serif;
-    font-size: 18px;
-    font-weight: 900;
-    letter-spacing: 2px;
-    padding: 5px 22px;
-    border-radius: 50px;
-    margin-top: -4px;
-  }
-
-  .login-label {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text-muted);
-    margin-bottom: 6px;
-    letter-spacing: 0.3px;
-  }
-
-  .login-input {
-    width: 100%;
-    background: var(--blue-pale);
-    border: 2px solid transparent;
-    border-radius: 50px;
-    padding: 13px 20px;
-    font-size: 15px;
-    font-family: 'Nunito Sans', sans-serif;
-    color: var(--text);
-    outline: none;
-    transition: all 0.2s;
-    margin-bottom: 16px;
-  }
-  .login-input:focus {
-    border-color: var(--blue);
-    background: var(--white);
-    box-shadow: 0 0 0 4px rgba(0,144,255,0.1);
-  }
-  .login-input::placeholder { color: var(--text-light); }
-
-  .btn-login {
-    width: 100%;
-    background: var(--blue);
-    color: white;
-    border: none;
-    border-radius: 50px;
-    padding: 14px;
-    font-size: 16px;
-    font-weight: 800;
-    font-family: 'Nunito', sans-serif;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-top: 4px;
-    letter-spacing: 0.5px;
-  }
-  .btn-login:hover { background: var(--blue-dark); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,144,255,0.3); }
-  .btn-login:active { transform: translateY(0); }
-
-  .login-links {
-    text-align: center;
-    margin-top: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .link-red { color: var(--red); font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none; }
-  .link-blue { color: var(--blue); font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none; }
-  .link-red:hover { text-decoration: underline; }
-  .link-blue:hover { text-decoration: underline; }
-
-  .input-error { border-color: var(--red) !important; box-shadow: 0 0 0 4px rgba(239,68,68,0.1) !important; }
-  .error-msg { color: var(--red); font-size: 12px; font-weight: 600; margin-top: -10px; margin-bottom: 10px; padding-left: 12px; display: none; }
-
-  /* ─── APP SHELL ───────────────────────────── */
-  #app-view {
-    display: none;
-    min-height: 100vh;
-  }
-  #app-view.active { display: flex; }
-
-  /* ─── SIDEBAR ─────────────────────────────── */
-  .sidebar {
-    width: var(--sidebar-w);
-    background: var(--white);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    position: fixed;
-    top: 0; left: 0; bottom: 0;
-    z-index: 100;
-    transition: transform 0.3s ease;
-    box-shadow: 2px 0 16px rgba(0,0,0,0.04);
-  }
-  .sidebar.hidden { transform: translateX(-100%); }
-
-  .sidebar-logo {
-    padding: 24px 20px 18px;
-    border-bottom: 1px solid var(--border);
-  }
-  .sidebar-logo .logo-big { font-size: 36px; }
-  .sidebar-logo .logo-badge { font-size: 11px; padding: 3px 14px; }
-
-  .sidebar-nav {
-    flex: 1;
-    padding: 12px 0;
-    overflow-y: auto;
-  }
-
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 11px 20px;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text-muted);
-    transition: all 0.15s;
-    border-radius: 0;
-    margin: 1px 10px;
-    border-radius: 12px;
-  }
-  .nav-item:hover { background: var(--blue-pale); color: var(--blue); }
-  .nav-item.active { background: var(--blue-light); color: var(--blue); }
-  .nav-item svg { flex-shrink: 0; }
-
-  .sidebar-footer {
-    padding: 12px 0;
-    border-top: 1px solid var(--border);
-  }
-
-  /* ─── MAIN CONTENT ────────────────────────── */
-  .main-content {
-    margin-left: var(--sidebar-w);
-    flex: 1;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* ─── TOP BAR ─────────────────────────────── */
-  .topbar {
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
-    padding: 14px 28px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-  }
-
-  .topbar-title {
-    font-family: 'Nunito', sans-serif;
-    font-size: 22px;
-    font-weight: 900;
-    color: var(--blue);
-    flex: 1;
-  }
-
-  .btn-scan {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: var(--white);
-    border: 2px solid var(--border);
-    border-radius: 50px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    color: var(--text);
-    transition: all 0.2s;
-    font-family: 'Nunito', sans-serif;
-  }
-  .btn-scan:hover { border-color: var(--blue); color: var(--blue); }
-
-  .btn-add {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: var(--blue);
-    border: none;
-    border-radius: 50px;
-    font-size: 14px;
-    font-weight: 800;
-    cursor: pointer;
-    color: white;
-    transition: all 0.2s;
-    font-family: 'Nunito', sans-serif;
-    letter-spacing: 0.3px;
-  }
-  .btn-add:hover { background: var(--blue-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,144,255,0.3); }
-
-  /* ─── PAGE CONTENT ────────────────────────── */
-  .page-content {
-    padding: 28px;
-    flex: 1;
-  }
-
-  /* ─── DASHBOARD ───────────────────────────── */
-  .greeting {
-    font-family: 'Nunito', sans-serif;
-    font-size: 28px;
-    font-weight: 900;
-    color: var(--text);
-    margin-bottom: 20px;
-  }
-  .greeting span { color: var(--blue); }
-
-  .stat-cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-
-  .stat-card {
-    background: var(--white);
-    border-radius: var(--radius);
-    padding: 20px 22px;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 2px solid transparent;
-    box-shadow: var(--shadow);
-  }
-  .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-  .stat-card.active-tab { border-color: var(--blue); }
-
-  .stat-card.total { border-left: 4px solid var(--blue); }
-  .stat-card.expiring { border-left: 4px solid var(--red); }
-  .stat-card.safe { border-left: 4px solid var(--green); }
-
-  .stat-label {
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-  }
-  .stat-card.expiring .stat-label { color: var(--red); }
-  .stat-card.safe .stat-label { color: var(--green); }
-  .stat-card.total .stat-label { color: var(--blue); }
-
-  .stat-num {
-    font-family: 'Nunito', sans-serif;
-    font-size: 42px;
-    font-weight: 900;
-    line-height: 1;
-  }
-  .stat-card.total .stat-num { color: var(--blue); }
-  .stat-card.expiring .stat-num { color: var(--red); }
-  .stat-card.safe .stat-num { color: var(--green); }
-
-  .stat-icon {
-    float: right;
-    margin-top: -4px;
-    opacity: 0.2;
-    font-size: 36px;
-  }
-
-  /* ─── INVENTORY TABLE ─────────────────────── */
-  .inventory-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
-  }
-
-  .section-title {
-    font-family: 'Nunito', sans-serif;
-    font-size: 13px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: var(--text-muted);
-  }
-
-  .search-filter-row {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-
-  .search-wrap {
-    position: relative;
-    flex: 1;
-  }
-  .search-wrap svg {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-light);
-  }
-  .search-input {
-    width: 100%;
-    padding: 11px 16px 11px 40px;
-    background: var(--white);
-    border: 2px solid var(--border);
-    border-radius: 50px;
-    font-size: 14px;
-    font-family: 'Nunito Sans', sans-serif;
-    color: var(--text);
-    outline: none;
-    transition: all 0.2s;
-    min-width: 280px;
-  }
-  .search-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,144,255,0.1); }
-  .search-input::placeholder { color: var(--text-light); }
-
-  .btn-filter {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 11px 18px;
-    background: var(--blue);
-    color: white;
-    border: none;
-    border-radius: 50px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: 'Nunito', sans-serif;
-    position: relative;
-  }
-  .btn-filter:hover { background: var(--blue-dark); }
-
-  .filter-dropdown {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    background: var(--white);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-md);
-    padding: 16px;
-    min-width: 220px;
-    z-index: 200;
-    display: none;
-    border: 1px solid var(--border);
-    animation: fadeInDown 0.2s ease;
-  }
-  .filter-dropdown.open { display: block; }
-
-  @keyframes fadeInDown {
-    from { opacity: 0; transform: translateY(-8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .filter-group-title {
-    font-size: 11px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--text-muted);
-    margin-bottom: 8px;
-    margin-top: 12px;
-  }
-  .filter-group-title:first-child { margin-top: 0; }
-
-  .filter-option {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: background 0.15s;
-    font-size: 14px;
-    font-weight: 600;
-  }
-  .filter-option:hover { background: var(--blue-pale); }
-  .filter-option input[type="checkbox"] { accent-color: var(--blue); width: 14px; height: 14px; }
-  .filter-option .expiring-tag { color: var(--orange); }
-  .filter-option .indate-tag { color: var(--green); }
-  .filter-option .expired-tag { color: var(--red); }
-  .filter-option .cat-tag { color: var(--blue); }
-
-  /* ─── MED TABLE ───────────────────────────── */
-  .med-table {
-    background: var(--white);
-    border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: var(--shadow);
-  }
-
-  .med-table-header {
-    display: grid;
-    grid-template-columns: 2fr 1.5fr 80px 1.2fr 100px;
-    background: var(--blue-pale);
-    padding: 12px 20px;
-    gap: 12px;
-  }
-  .med-table-header span {
-    font-size: 11px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--text-muted);
-  }
-
-  .med-row {
-    display: grid;
-    grid-template-columns: 2fr 1.5fr 80px 1.2fr 100px;
-    padding: 14px 20px;
-    gap: 12px;
-    align-items: center;
-    border-bottom: 1px solid var(--border);
-    transition: background 0.15s;
-    cursor: pointer;
-  }
-  .med-row:last-child { border-bottom: none; }
-  .med-row:hover { background: var(--blue-pale); }
-  .med-row.expired-row { background: rgba(239,68,68,0.04); }
-  .med-row.expiring-row { background: rgba(245,158,11,0.04); }
-  .med-row.indate-row { background: rgba(34,197,94,0.04); }
-
-  .med-name {
-    font-weight: 700;
-    font-size: 15px;
-    color: var(--text);
-  }
-  .med-row.expired-row .med-name { color: var(--red); }
-  .med-row.expiring-row .med-name { color: var(--orange); }
-
-  .med-cat {
-    font-size: 14px;
-    color: var(--text-muted);
-  }
-
-  .med-qty {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text);
-  }
-
-  .med-expiry {
-    font-size: 14px;
-    font-weight: 700;
-  }
-  .med-expiry.expired { color: var(--red); }
-  .med-expiry.expiring { color: var(--orange); }
-  .med-expiry.indate { color: var(--green); }
-
-  .status-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 12px;
-    border-radius: 50px;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-  .status-badge.expired { background: var(--red-light); color: var(--red); }
-  .status-badge.expiring { background: var(--orange-light); color: var(--orange); }
-  .status-badge.indate { background: var(--green-light); color: var(--green); }
-
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-  }
-  .empty-state .empty-icon { font-size: 56px; margin-bottom: 16px; opacity: 0.3; }
-  .empty-state h3 { font-family: 'Nunito', sans-serif; font-size: 20px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; }
-  .empty-state p { font-size: 14px; color: var(--text-light); }
-
-  /* ─── CARD GRID (simple view) ─────────────── */
-  .med-cards {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-  }
-
-  .med-card {
-    background: var(--white);
-    border-radius: var(--radius);
-    padding: 18px 20px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    box-shadow: var(--shadow);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .med-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-
-  .med-card-icon {
-    width: 48px; height: 48px;
-    border-radius: 50%;
-    background: #D1D5DB;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .med-card-info { flex: 1; }
-  .med-card-name { font-weight: 800; font-size: 16px; color: var(--text); font-family: 'Nunito', sans-serif; }
-  .med-card-cat { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 2px; }
-
-  .med-card-right { text-align: right; }
-  .med-card-qty { font-size: 13px; color: var(--text-muted); font-weight: 700; }
-  .med-card-days { font-size: 13px; font-weight: 800; }
-  .med-card-days.red { color: var(--red); }
-  .med-card-days.green { color: var(--green); }
-  .med-card-days.orange { color: var(--orange); }
-
-  .med-card-trash {
-    cursor: pointer;
-    color: var(--text-light);
-    padding: 4px;
-    border-radius: 6px;
-    transition: all 0.2s;
-  }
-  .med-card-trash:hover { color: var(--red); background: var(--red-light); }
-
-  /* ─── MODAL ───────────────────────────────── */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 1000;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(2px);
-    animation: fadeIn 0.2s ease;
-  }
-  .modal-overlay.open { display: flex; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; } to { opacity: 1; }
-  }
-
-  .modal {
-    background: var(--white);
-    border-radius: 24px;
-    padding: 36px 36px 32px;
-    width: 100%;
-    max-width: 520px;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.15);
-    animation: modalIn 0.3s ease;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-
-  @keyframes modalIn {
-    from { opacity: 0; transform: scale(0.95) translateY(20px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
-  }
-
-  .modal-title {
-    font-family: 'Nunito', sans-serif;
-    font-size: 22px;
-    font-weight: 900;
-    color: var(--text);
-    margin-bottom: 24px;
-  }
-
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-
-  .form-group {
-    margin-bottom: 18px;
-  }
-
-  .form-label {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text-muted);
-    margin-bottom: 6px;
-    display: block;
-  }
-
-  .form-input, .form-select {
-    width: 100%;
-    padding: 12px 16px;
-    background: var(--blue-pale);
-    border: 2px solid transparent;
-    border-radius: 12px;
-    font-size: 15px;
-    font-family: 'Nunito Sans', sans-serif;
-    color: var(--text);
-    outline: none;
-    transition: all 0.2s;
-  }
-  .form-input:focus, .form-select:focus {
-    border-color: var(--blue);
-    background: var(--white);
-    box-shadow: 0 0 0 3px rgba(0,144,255,0.1);
-  }
-  .form-select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394A3B8' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
-  .form-input.error, .form-select.error { border-color: var(--red) !important; }
-
-  .form-hint {
-    font-size: 11px;
-    color: var(--text-light);
-    margin-top: 4px;
-  }
-
-  .btn-upload {
-    width: 100%;
-    padding: 13px;
-    background: var(--blue);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 800;
-    cursor: pointer;
-    font-family: 'Nunito', sans-serif;
-    transition: all 0.2s;
-    margin-bottom: 16px;
-  }
-  .btn-upload:hover { background: var(--blue-dark); }
-
-  .modal-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 8px;
-  }
-
-  .btn-cancel {
-    padding: 13px;
-    background: var(--bg);
-    color: var(--text-muted);
-    border: none;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 800;
-    cursor: pointer;
-    font-family: 'Nunito', sans-serif;
-    transition: all 0.2s;
-  }
-  .btn-cancel:hover { background: var(--border); color: var(--text); }
-
-  .btn-save {
-    padding: 13px;
-    background: var(--blue);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 800;
-    cursor: pointer;
-    font-family: 'Nunito', sans-serif;
-    transition: all 0.2s;
-  }
-  .btn-save:hover { background: var(--blue-dark); }
-
-  /* ─── MEDICINE DETAIL MODAL ───────────────── */
-  .detail-modal-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    margin-bottom: 20px;
-  }
-
-  .detail-med-icon {
-    width: 64px; height: 64px;
-    border-radius: 50%;
-    background: #E5E7EB;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .detail-med-name {
-    font-family: 'Nunito', sans-serif;
-    font-size: 26px;
-    font-weight: 900;
-    color: var(--text);
-  }
-
-  .detail-badge-wrap { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
-
-  .detail-status {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 14px;
-    border-radius: 50px;
-    font-size: 12px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .detail-status.indate { background: var(--green); color: white; }
-  .detail-status.expired { background: var(--red); color: white; }
-  .detail-status.expiring { background: var(--orange); color: white; }
-
-  .detail-expiry-date {
-    font-family: 'Nunito', sans-serif;
-    font-size: 18px;
-    font-weight: 800;
-  }
-  .detail-expiry-date.indate { color: var(--green); }
-  .detail-expiry-date.expired { color: var(--red); }
-  .detail-expiry-date.expiring { color: var(--orange); }
-
-  .detail-desc {
-    font-size: 14px;
-    color: var(--text-muted);
-    margin-bottom: 20px;
-    padding-left: 2px;
-  }
-
-  .detail-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-
-  .detail-field {
-    background: var(--blue-pale);
-    border-radius: var(--radius-sm);
-    padding: 12px 14px;
-  }
-  .detail-field-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-  .detail-field-value { font-size: 16px; font-weight: 700; color: var(--text); }
-
-  .btn-edit {
-    background: var(--blue);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 6px 14px;
-    font-size: 13px;
-    font-weight: 800;
-    cursor: pointer;
-    font-family: 'Nunito', sans-serif;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    transition: all 0.2s;
-  }
-  .btn-edit:hover { background: var(--blue-dark); }
-
-  .modal-close {
-    position: absolute;
-    top: 20px; right: 20px;
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    background: var(--bg);
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    color: var(--text-muted);
-    transition: all 0.2s;
-  }
-  .modal-close:hover { background: var(--border); color: var(--text); }
-
-  /* ─── TOAST ───────────────────────────────── */
-  .toast-container {
-    position: fixed;
-    bottom: 28px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2000;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: center;
-  }
-
-  .toast {
-    background: var(--green);
-    color: white;
-    padding: 12px 24px;
-    border-radius: 50px;
-    font-size: 15px;
-    font-weight: 800;
-    font-family: 'Nunito', sans-serif;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-    animation: toastIn 0.3s ease;
-    white-space: nowrap;
-  }
-  .toast.error { background: var(--red); }
-  .toast.info { background: var(--blue); }
-
-  @keyframes toastIn {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ─── CONFIRM DIALOG ──────────────────────── */
-  .confirm-modal {
-    max-width: 380px;
-    text-align: center;
-  }
-  .confirm-icon { font-size: 48px; margin-bottom: 12px; }
-  .confirm-title { font-family: 'Nunito', sans-serif; font-size: 20px; font-weight: 900; margin-bottom: 8px; }
-  .confirm-msg { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
-  .btn-danger { background: var(--red) !important; }
-  .btn-danger:hover { background: #DC2626 !important; }
-
-  /* ─── PAGE: MEDICINE CABINET ──────────────── */
-  .cabinet-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 8px;
-    flex-wrap: wrap;
-  }
-
-  .cabinet-stat {
-    font-size: 13px;
-    font-weight: 700;
-    padding: 4px 14px;
-    border-radius: 50px;
-    cursor: pointer;
-  }
-  .cabinet-stat.expired-tag { background: var(--red-light); color: var(--red); }
-  .cabinet-stat.indate-tag { background: var(--green-light); color: var(--green); }
-  .cabinet-stat.total-tag { background: var(--blue-light); color: var(--blue); }
-
-  .cabinet-table .med-row {
-    grid-template-columns: 2.5fr 1.5fr 1.5fr 1.2fr;
-  }
-  .cabinet-table .med-table-header {
-    grid-template-columns: 2.5fr 1.5fr 1.5fr 1.2fr;
-  }
-
-  .brand-badge {
-    display: inline-flex;
-    padding: 2px 10px;
-    border-radius: 50px;
-    font-size: 11px;
-    font-weight: 800;
-    background: var(--blue);
-    color: white;
-    margin-top: 3px;
-  }
-
-  /* ─── PAGE: SCHEDULE ──────────────────────── */
-  .schedule-grid {
-    display: grid;
-    grid-template-columns: 340px 1fr;
-    gap: 20px;
-  }
-
-  .calendar-card {
-    background: var(--white);
-    border-radius: var(--radius);
-    padding: 22px;
-    box-shadow: var(--shadow);
-  }
-
-  .cal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-  }
-  .cal-month {
-    font-family: 'Nunito', sans-serif;
-    font-size: 18px;
-    font-weight: 900;
-    color: var(--text);
-  }
-  .cal-nav {
-    background: none;
-    border: 2px solid var(--border);
-    border-radius: 8px;
-    width: 32px; height: 32px;
-    cursor: pointer;
-    font-size: 16px;
-    color: var(--text-muted);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-  }
-  .cal-nav:hover { border-color: var(--blue); color: var(--blue); }
-
-  .cal-weekdays {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
-    margin-bottom: 8px;
-  }
-  .cal-weekday {
-    text-align: center;
-    font-size: 11px;
-    font-weight: 800;
-    color: var(--text-muted);
-    padding: 4px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .cal-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 3px;
-  }
-  .cal-day {
-    aspect-ratio: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-    color: var(--text);
-    position: relative;
-  }
-  .cal-day:hover { background: var(--blue-pale); }
-  .cal-day.other-month { color: var(--text-light); }
-  .cal-day.today { background: var(--blue); color: white; font-weight: 800; }
-  .cal-day.has-dose::after {
-    content: '';
-    position: absolute;
-    bottom: 2px;
-    left: 50%; transform: translateX(-50%);
-    width: 4px; height: 4px;
-    border-radius: 50%;
-    background: var(--blue);
-  }
-  .cal-day.today.has-dose::after { background: white; }
-
-  .schedule-list-card {
-    background: var(--white);
-    border-radius: var(--radius);
-    padding: 22px;
-    box-shadow: var(--shadow);
-  }
-
-  .schedule-date-title {
-    font-family: 'Nunito', sans-serif;
-    font-size: 18px;
-    font-weight: 900;
-    color: var(--text);
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .dose-item {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px;
-    border-radius: 12px;
-    margin-bottom: 10px;
-    border: 1px solid var(--border);
-    transition: all 0.15s;
-  }
-  .dose-item:hover { background: var(--blue-pale); border-color: var(--blue); }
-
-  .dose-time {
-    background: var(--blue-pale);
-    color: var(--blue);
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 800;
-    font-family: 'Nunito', sans-serif;
-    white-space: nowrap;
-  }
-
-  .dose-info { flex: 1; }
-  .dose-name { font-weight: 800; font-size: 15px; color: var(--text); }
-  .dose-detail { font-size: 13px; color: var(--text-muted); }
-
-  .dose-check {
-    width: 24px; height: 24px;
-    border: 2px solid var(--border);
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .dose-check.checked { background: var(--green); border-color: var(--green); }
-  .dose-check.checked::after {
-    content: '✓';
-    color: white;
-    font-size: 13px;
-    font-weight: 900;
-  }
-
-  .btn-add-dose {
-    width: 100%;
-    padding: 12px;
-    background: none;
-    border: 2px dashed var(--border);
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text-muted);
-    cursor: pointer;
-    font-family: 'Nunito', sans-serif;
-    transition: all 0.2s;
-  }
-  .btn-add-dose:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-pale); }
-
-  /* ─── EXPIRY WATCH ────────────────────────── */
-  .expiry-watch-grid {
-    display: grid;
-    gap: 12px;
-  }
-
-  .expiry-item {
-    background: var(--white);
-    border-radius: var(--radius);
-    padding: 18px 20px;
-    box-shadow: var(--shadow);
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 16px;
-    align-items: center;
-  }
-
-  .expiry-urgency {
-    width: 6px;
-    border-radius: 3px;
-    height: 100%;
-    min-height: 40px;
-    flex-shrink: 0;
-  }
-  .expiry-urgency.red { background: var(--red); }
-  .expiry-urgency.orange { background: var(--orange); }
-  .expiry-urgency.green { background: var(--green); }
-
-  .expiry-days-badge {
-    background: var(--red-light);
-    color: var(--red);
-    padding: 8px 16px;
-    border-radius: 10px;
-    font-family: 'Nunito', sans-serif;
-    font-size: 16px;
-    font-weight: 900;
-    text-align: center;
-    white-space: nowrap;
-  }
-  .expiry-days-badge.orange { background: var(--orange-light); color: var(--orange); }
-  .expiry-days-badge.green { background: var(--green-light); color: var(--green); }
-
-  /* ─── TREATMENT PLANS ─────────────────────── */
-  .treatment-card {
-    background: var(--white);
-    border-radius: var(--radius);
-    padding: 22px;
-    box-shadow: var(--shadow);
-    margin-bottom: 14px;
-  }
-
-  .treatment-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
-  }
-
-  .treatment-name {
-    font-family: 'Nunito', sans-serif;
-    font-size: 20px;
-    font-weight: 900;
-    color: var(--text);
-  }
-
-  .treatment-progress {
-    height: 8px;
-    background: var(--border);
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 8px;
-  }
-  .treatment-progress-bar {
-    height: 100%;
-    background: var(--blue);
-    border-radius: 4px;
-    transition: width 0.5s ease;
-  }
-
-  .treatment-meds {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 14px;
-  }
-
-  .treatment-med-pill {
-    background: var(--blue-pale);
-    color: var(--blue);
-    padding: 5px 14px;
-    border-radius: 50px;
-    font-size: 13px;
-    font-weight: 700;
-  }
-
-  /* ─── SHOPPING LIST ───────────────────────── */
-  .shopping-list {
-    background: var(--white);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    overflow: hidden;
-  }
-
-  .shopping-item {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    transition: background 0.15s;
-  }
-  .shopping-item:last-child { border-bottom: none; }
-  .shopping-item:hover { background: var(--blue-pale); }
-
-  .shopping-check {
-    width: 22px; height: 22px;
-    border: 2px solid var(--border);
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .shopping-check.checked { background: var(--green); border-color: var(--green); }
-  .shopping-check.checked::after { content: '✓'; color: white; font-size: 13px; font-weight: 900; }
-
-  .shopping-name { flex: 1; font-size: 15px; font-weight: 700; color: var(--text); }
-  .shopping-name.done { text-decoration: line-through; color: var(--text-light); }
-  .shopping-qty { font-size: 13px; color: var(--text-muted); font-weight: 600; }
-  .shopping-priority { font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 50px; }
-  .shopping-priority.urgent { background: var(--red-light); color: var(--red); }
-  .shopping-priority.normal { background: var(--orange-light); color: var(--orange); }
-
-  .btn-add-item {
-    width: 100%;
-    padding: 14px;
-    background: none;
-    border: none;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--blue);
-    cursor: pointer;
-    font-family: 'Nunito', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: background 0.2s;
-  }
-  .btn-add-item:hover { background: var(--blue-pale); }
-
-  /* ─── GOLDEN RULES BANNER ─────────────────── */
-  .golden-banner {
-    background: linear-gradient(135deg, #0090FF 0%, #0060CC 100%);
-    border-radius: var(--radius);
-    padding: 20px 24px;
-    color: white;
-    margin-bottom: 24px;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .golden-banner-title {
-    font-family: 'Nunito', sans-serif;
-    font-size: 16px;
-    font-weight: 900;
-    margin-bottom: 4px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .golden-rules-content { display: none; margin-top: 14px; }
-  .golden-rules-content.open { display: block; }
-
-  .golden-rule {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-    align-items: flex-start;
-  }
-  .golden-rule-num {
-    width: 22px; height: 22px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 50%;
-    font-size: 11px;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-  .golden-rule-text { font-size: 13px; line-height: 1.5; }
-  .golden-rule-text strong { font-weight: 800; }
-
-  /* ─── PAGE TRANSITIONS ────────────────────── */
-  .page-section { display: none; }
-  .page-section.active { display: block; animation: pageFadeIn 0.25s ease; }
-
-  @keyframes pageFadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ─── ABOUT PAGE ──────────────────────────── */
-  .about-card {
-    background: var(--white);
-    border-radius: var(--radius);
-    padding: 32px;
-    box-shadow: var(--shadow);
-    max-width: 600px;
-    text-align: center;
-  }
-  .about-card .logo-big { font-size: 56px; display: block; }
-  .about-card .logo-badge { display: inline-block; font-size: 16px; padding: 5px 20px; }
-  .about-card p { font-size: 15px; color: var(--text-muted); margin-top: 16px; line-height: 1.6; }
-  .about-version { margin-top: 16px; font-size: 13px; color: var(--text-light); font-weight: 600; }
-
-  /* ─── SETTINGS ────────────────────────────── */
-  .settings-section {
-    background: var(--white);
-    border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    margin-bottom: 20px;
-  }
-  .settings-section-title {
-    padding: 14px 20px;
-    font-size: 11px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--text-muted);
-    background: var(--blue-pale);
-  }
-  .settings-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    transition: background 0.15s;
-  }
-  .settings-row:last-child { border-bottom: none; }
-  .settings-row:hover { background: var(--blue-pale); }
-  .settings-row-label { font-size: 15px; font-weight: 600; color: var(--text); }
-  .settings-row-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
-
-  .toggle {
-    width: 44px; height: 24px;
-    background: var(--border);
-    border-radius: 50px;
-    cursor: pointer;
-    transition: background 0.2s;
-    position: relative;
-  }
-  .toggle.on { background: var(--blue); }
-  .toggle::after {
-    content: '';
-    position: absolute;
-    width: 18px; height: 18px;
-    background: white;
-    border-radius: 50%;
-    top: 3px; left: 3px;
-    transition: left 0.2s;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  }
-  .toggle.on::after { left: 23px; }
-
-  /* ─── PROFILE ─────────────────────────────── */
-  .profile-header {
-    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
-    border-radius: var(--radius);
-    padding: 32px;
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 8px 24px rgba(0,144,255,0.25);
-  }
-
-  .profile-avatar {
-    width: 72px; height: 72px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Nunito', sans-serif;
-    font-size: 28px;
-    font-weight: 900;
-    flex-shrink: 0;
-    border: 3px solid rgba(255,255,255,0.4);
-  }
-
-  .profile-name { font-family: 'Nunito', sans-serif; font-size: 24px; font-weight: 900; }
-  .profile-email { font-size: 14px; opacity: 0.85; margin-top: 2px; }
-
-  .btn-logout {
-    width: 100%;
-    padding: 14px;
-    background: var(--red-light);
-    color: var(--red);
-    border: none;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 800;
-    cursor: pointer;
-    font-family: 'Nunito', sans-serif;
-    transition: all 0.2s;
-    margin-top: 8px;
-  }
-  .btn-logout:hover { background: var(--red); color: white; }
-
-  /* ─── SCROLLBAR ───────────────────────────── */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--text-light); }
-
-  /* ─── RESPONSIVE ──────────────────────────── */
-  @media (max-width: 900px) {
-    :root { --sidebar-w: 0px; }
-    .sidebar { transform: translateX(-100%); width: 260px; }
-    .sidebar.mobile-open { transform: translateX(0); }
-    .main-content { margin-left: 0; }
-    .stat-cards { grid-template-columns: 1fr 1fr; }
-    .stat-cards .stat-card:first-child { grid-column: span 2; }
-    .med-cards { grid-template-columns: 1fr; }
-    .schedule-grid { grid-template-columns: 1fr; }
-  }
-
-  .sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 99;
-    display: none;
-  }
-  .sidebar-overlay.open { display: block; }
-
-  /* ─── PAGE HEADER ─────────────────────────── */
-  .page-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
-  .page-heading {
-    font-family: 'Nunito', sans-serif;
-    font-size: 26px;
-    font-weight: 900;
-    color: var(--text);
-  }
-
-  .hint-text {
-    font-size: 13px;
-    color: var(--text-muted);
-    background: var(--orange-light);
-    color: var(--orange);
-    padding: 4px 12px;
-    border-radius: 6px;
-    font-weight: 700;
-    display: inline-block;
-    margin-bottom: 16px;
-  }
+:root{
+  --blue:#0090FF;--blue-dark:#0070CC;--blue-light:#DBEEFF;--blue-pale:#F0F7FF;
+  --green:#22C55E;--green-light:#DCFCE7;
+  --red:#EF4444;--red-light:#FEE2E2;
+  --orange:#F59E0B;--orange-light:#FEF3C7;
+  --text:#1E293B;--text-muted:#64748B;--text-light:#94A3B8;
+  --border:#E2E8F0;--bg:#F8FAFC;--white:#FFFFFF;
+  --sidebar-w:260px;--radius:14px;--radius-sm:8px;
+  --shadow:0 4px 24px rgba(0,144,255,.08);--shadow-md:0 8px 32px rgba(0,0,0,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── VIEWS ── */
+.view{display:none}
+.view.active{display:block}
+
+/* ─────────────────────────────────────────
+   LOGIN
+───────────────────────────────────────── */
+#login-view{
+  min-height:100vh;display:none;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:linear-gradient(145deg,#E8F4FF 0%,#F0F9FF 50%,#E0EDFF 100%);
+  gap:24px;position:relative;overflow:hidden;
+}
+#login-view.active{display:flex}
+#login-view::before{content:'';position:absolute;width:600px;height:600px;
+  background:radial-gradient(circle,rgba(0,144,255,.08) 0%,transparent 70%);top:-100px;right:-100px}
+#login-view::after{content:'';position:absolute;width:400px;height:400px;
+  background:radial-gradient(circle,rgba(0,144,255,.06) 0%,transparent 70%);bottom:-50px;left:-50px}
+
+/* Logo above card */
+.login-logo-wrap{
+  display:flex;align-items:center;gap:14px;z-index:1;animation:slideUp .4s ease;
+}
+.login-logo-big{
+  font-family:'Nunito',sans-serif;font-size:72px;font-weight:900;
+  color:var(--blue);line-height:1;letter-spacing:-2px;
+}
+.login-logo-right{display:flex;flex-direction:column;gap:4px}
+.login-badge{
+  background:var(--blue);color:white;font-family:'Nunito',sans-serif;
+  font-size:18px;font-weight:900;letter-spacing:2px;
+  padding:4px 18px;border-radius:50px;align-self:flex-start;
+}
+.demo-badge{
+  background:#FEF3C7;color:#92400E;font-family:'Nunito',sans-serif;
+  font-size:11px;font-weight:900;letter-spacing:2px;
+  padding:3px 10px;border-radius:50px;align-self:flex-start;
+  border:1.5px solid #F59E0B;
+}
+
+/* Login card */
+.login-card{
+  background:var(--white);border-radius:24px;padding:40px 44px;
+  width:100%;max-width:420px;
+  box-shadow:0 20px 60px rgba(0,144,255,.12),0 4px 16px rgba(0,0,0,.06);
+  z-index:1;animation:slideUp .5s .1s ease both;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.login-label{font-size:13px;font-weight:700;color:var(--text-muted);margin-bottom:6px;letter-spacing:.3px}
+.login-input-wrap{position:relative;margin-bottom:16px}
+.login-input{
+  width:100%;background:var(--blue-pale);border:2px solid transparent;
+  border-radius:50px;padding:13px 20px;font-size:15px;
+  font-family:'Nunito Sans',sans-serif;color:var(--text);outline:none;transition:all .2s;
+}
+.login-input:focus{border-color:var(--blue);background:var(--white);box-shadow:0 0 0 4px rgba(0,144,255,.1)}
+.login-input::placeholder{color:var(--text-light)}
+.login-input.has-eye{padding-right:48px}
+.pw-toggle{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;color:var(--text-muted);
+  display:flex;align-items:center;padding:4px;border-radius:6px;
+  transition:color .2s;
+}
+.pw-toggle:hover{color:var(--blue)}
+.btn-login{
+  width:100%;background:var(--blue);color:white;border:none;border-radius:50px;
+  padding:14px;font-size:16px;font-weight:800;font-family:'Nunito',sans-serif;
+  cursor:pointer;transition:all .2s;margin-top:4px;letter-spacing:.5px;
+}
+.btn-login:hover{background:var(--blue-dark);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,144,255,.3)}
+.login-links{text-align:center;margin-top:14px;display:flex;flex-direction:column;gap:6px}
+.link-red{color:var(--red);font-size:14px;font-weight:700;cursor:pointer;text-decoration:none}
+.link-blue{color:var(--blue);font-size:14px;font-weight:700;cursor:pointer;text-decoration:none}
+.link-red:hover,.link-blue:hover{text-decoration:underline}
+.input-error{border-color:var(--red)!important;box-shadow:0 0 0 4px rgba(239,68,68,.1)!important}
+.error-msg{color:var(--red);font-size:12px;font-weight:600;margin-top:4px;padding-left:12px;display:none}
+
+/* ─────────────────────────────────────────
+   APP SHELL
+───────────────────────────────────────── */
+#app-view{display:none;min-height:100vh}
+#app-view.active{display:flex}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99;display:none}
+.sidebar-overlay.open{display:block}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar-w);background:var(--white);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;bottom:0;z-index:100;
+  transition:transform .3s ease;
+  box-shadow:2px 0 16px rgba(0,0,0,.04);
+}
+.sidebar.hidden{transform:translateX(-260px)}
+.sidebar-logo{padding:20px 20px 16px;border-bottom:1px solid var(--border)}
+.sidebar-logo-row{display:flex;align-items:center;gap:10px}
+.sidebar-logo .logo-big{font-family:'Nunito',sans-serif;font-size:30px;font-weight:900;color:var(--blue);letter-spacing:-1px}
+.sidebar-logo .logo-badge{background:var(--blue);color:white;font-family:'Nunito',sans-serif;font-size:10px;font-weight:900;letter-spacing:2px;padding:3px 10px;border-radius:50px}
+.sidebar-logo .demo-sm{background:#FEF3C7;color:#92400E;font-family:'Nunito',sans-serif;font-size:9px;font-weight:900;letter-spacing:1.5px;padding:2px 8px;border-radius:50px;border:1px solid #F59E0B}
+.sidebar-nav{flex:1;padding:10px 0;overflow-y:auto}
+.nav-item{
+  display:flex;align-items:center;gap:12px;padding:11px 20px;cursor:pointer;
+  font-size:14px;font-weight:600;color:var(--text-muted);transition:all .15s;
+  margin:1px 10px;border-radius:12px;user-select:none;
+}
+.nav-item:hover{background:var(--blue-pale);color:var(--blue);transform:translateX(2px)}
+.nav-item.active{background:var(--blue-light);color:var(--blue)}
+.nav-item svg{flex-shrink:0}
+.sidebar-footer{padding:10px 0;border-top:1px solid var(--border)}
+
+/* ── MAIN CONTENT ── */
+.main-content{
+  margin-left:var(--sidebar-w);flex:1;min-height:100vh;
+  display:flex;flex-direction:column;transition:margin-left .3s ease;
+}
+.main-content.full-width{margin-left:0}
+
+/* ── TOPBAR ── */
+.topbar{
+  background:var(--white);border-bottom:1px solid var(--border);
+  padding:14px 28px;display:flex;align-items:center;gap:12px;
+  position:sticky;top:0;z-index:50;
+}
+.topbar-title{font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;color:var(--blue);flex:1}
+.hamburger-btn{
+  background:none;border:2px solid var(--border);border-radius:10px;
+  padding:7px;cursor:pointer;color:var(--text-muted);
+  display:flex;align-items:center;transition:all .2s;
+}
+.hamburger-btn:hover{border-color:var(--blue);color:var(--blue)}
+.btn-add{
+  display:flex;align-items:center;gap:8px;padding:10px 20px;
+  background:var(--blue);border:none;border-radius:50px;
+  font-size:14px;font-weight:800;cursor:pointer;color:white;
+  transition:all .2s;font-family:'Nunito',sans-serif;letter-spacing:.3px;
+}
+.btn-add:hover{background:var(--blue-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,144,255,.3)}
+
+/* ── PAGE CONTENT ── */
+.page-content{padding:24px 28px;flex:1}
+.page-section{display:none}
+.page-section.active{display:block;animation:pageFadeIn .25s ease}
+@keyframes pageFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.page-heading{font-family:'Nunito',sans-serif;font-size:24px;font-weight:900;color:var(--text)}
+
+/* ─────────────────────────────────────────
+   DASHBOARD
+───────────────────────────────────────── */
+.greeting{font-family:'Nunito',sans-serif;font-size:26px;font-weight:900;color:var(--text);margin-bottom:18px}
+.greeting span{color:var(--blue)}
+.stat-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
+.stat-card{
+  background:var(--white);border-radius:var(--radius);padding:18px 20px;
+  cursor:pointer;transition:all .2s;border:2.5px solid transparent;
+  box-shadow:var(--shadow);user-select:none;
+}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.stat-card.total{border-left:4px solid var(--blue)}
+.stat-card.expiring{border-left:4px solid var(--red)}
+.stat-card.safe{border-left:4px solid var(--green)}
+.stat-card.active-tab.total{border-color:var(--blue)}
+.stat-card.active-tab.expiring{border-color:var(--red)}
+.stat-card.active-tab.safe{border-color:var(--green)}
+.stat-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.stat-card.total .stat-label{color:var(--blue)}
+.stat-card.expiring .stat-label{color:var(--red)}
+.stat-card.safe .stat-label{color:var(--green)}
+.stat-num{font-family:'Nunito',sans-serif;font-size:38px;font-weight:900;line-height:1}
+.stat-card.total .stat-num{color:var(--blue)}
+.stat-card.expiring .stat-num{color:var(--red)}
+.stat-card.safe .stat-num{color:var(--green)}
+.stat-icon-big{float:right;font-size:32px;opacity:.25;margin-top:-2px}
+
+/* Dashboard controls row */
+.dash-controls{
+  display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;
+}
+.section-title{font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);flex:1}
+.search-wrap{position:relative}
+.search-wrap svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text-light)}
+.search-input{
+  padding:10px 14px 10px 38px;background:var(--white);border:2px solid var(--border);
+  border-radius:50px;font-size:13px;font-family:'Nunito Sans',sans-serif;
+  color:var(--text);outline:none;transition:all .2s;width:240px;
+}
+.search-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,144,255,.1)}
+.search-input::placeholder{color:var(--text-light)}
+.btn-sort,.btn-filter-dash{
+  display:flex;align-items:center;gap:7px;padding:10px 16px;
+  border:2px solid var(--border);border-radius:50px;font-size:13px;font-weight:700;
+  cursor:pointer;background:var(--white);color:var(--text-muted);
+  font-family:'Nunito',sans-serif;transition:all .2s;position:relative;
+}
+.btn-sort:hover,.btn-filter-dash:hover{border-color:var(--blue);color:var(--blue)}
+
+/* Sort & filter dropdowns */
+.sort-dropdown,.filter-dropdown{
+  position:absolute;top:calc(100% + 8px);right:0;
+  background:var(--white);border-radius:var(--radius);
+  box-shadow:var(--shadow-md);padding:8px;min-width:200px;
+  z-index:200;display:none;border:1px solid var(--border);
+  animation:fadeInDown .2s ease;
+}
+.sort-dropdown.open,.filter-dropdown.open{display:block}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.sort-opt,.filter-opt{
+  padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;
+  color:var(--text-muted);transition:all .15s;display:flex;align-items:center;gap:8px;
+}
+.sort-opt:hover,.filter-opt:hover{background:var(--blue-pale);color:var(--blue)}
+.sort-opt.active,.filter-opt.active{background:var(--blue-pale);color:var(--blue);font-weight:800}
+.filter-group-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);padding:6px 12px 3px}
+.filter-opt input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px}
+
+/* ── MED CARDS (matching image) ── */
+.med-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.med-card{
+  background:var(--white);border-radius:var(--radius);
+  padding:18px 20px;display:flex;align-items:center;gap:14px;
+  box-shadow:var(--shadow);cursor:pointer;transition:all .2s;
+  border:1.5px solid transparent;
+}
+.med-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:var(--blue-light)}
+.med-card-icon{
+  width:48px;height:48px;border-radius:50%;background:#374151;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.med-card-info{flex:1;min-width:0}
+.med-card-name{font-family:'Nunito',sans-serif;font-weight:900;font-size:16px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.med-card-use{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted)}
+.med-card-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.med-card-qty{font-size:13px;color:var(--text-muted);font-weight:700}
+.med-card-qty span{font-weight:400}
+.med-card-days{font-size:13px;font-weight:900;font-family:'Nunito',sans-serif}
+.med-card-days.red{color:var(--red)}
+.med-card-days.orange{color:var(--orange)}
+.med-card-days.green{color:var(--green)}
+.med-card-trash{
+  cursor:pointer;color:var(--text-light);padding:5px;border-radius:7px;
+  transition:all .2s;display:flex;align-items:center;
+}
+.med-card-trash:hover{color:var(--red);background:var(--red-light)}
+
+.empty-state{text-align:center;padding:60px 20px}
+.empty-state .empty-icon{font-size:52px;margin-bottom:14px;opacity:.3}
+.empty-state h3{font-family:'Nunito',sans-serif;font-size:18px;font-weight:800;color:var(--text-muted);margin-bottom:6px}
+.empty-state p{font-size:14px;color:var(--text-light)}
+
+/* ─────────────────────────────────────────
+   MODALS
+───────────────────────────────────────── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;
+  display:none;align-items:center;justify-content:center;
+  backdrop-filter:blur(2px);animation:fadeIn .2s ease;
+}
+.modal-overlay.open{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--white);border-radius:24px;padding:34px 36px 30px;
+  width:100%;max-width:500px;
+  box-shadow:0 24px 64px rgba(0,0,0,.15);
+  animation:modalIn .3s ease;max-height:92vh;overflow-y:auto;position:relative;
+}
+.modal.sm{max-width:400px}
+@keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-title{font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;color:var(--text);margin-bottom:22px}
+.modal-close{
+  position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;
+  background:var(--bg);border:none;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;font-size:16px;color:var(--text-muted);transition:all .2s;
+}
+.modal-close:hover{background:var(--border);color:var(--text)}
+
+/* Form */
+.form-group{margin-bottom:16px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-label{font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:5px;display:block}
+.form-input,.form-select{
+  width:100%;padding:11px 14px;background:var(--blue-pale);
+  border:2px solid transparent;border-radius:11px;
+  font-size:14px;font-family:'Nunito Sans',sans-serif;color:var(--text);
+  outline:none;transition:all .2s;
+}
+.form-input:focus,.form-select:focus{border-color:var(--blue);background:var(--white);box-shadow:0 0 0 3px rgba(0,144,255,.1)}
+.form-select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394A3B8' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-color:var(--blue-pale);padding-right:32px}
+.form-input.error,.form-select.error{border-color:var(--red)!important}
+.form-hint{font-size:11px;color:var(--text-light);margin-top:4px}
+.form-optional{font-size:11px;color:var(--text-light);font-weight:400;margin-left:4px}
+
+/* Used-for tags */
+.used-for-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.uftag{
+  padding:4px 12px;border-radius:50px;border:1.5px solid var(--border);
+  font-size:12px;font-weight:700;cursor:pointer;color:var(--text-muted);
+  transition:all .2s;background:var(--white);
+}
+.uftag:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-pale)}
+.uftag.selected{border-color:var(--blue);color:var(--blue);background:var(--blue-pale)}
+
+.btn-upload{
+  width:100%;padding:12px;background:var(--blue);color:white;border:none;
+  border-radius:11px;font-size:14px;font-weight:800;cursor:pointer;
+  font-family:'Nunito',sans-serif;transition:all .2s;margin-bottom:14px;
+}
+.btn-upload:hover{background:var(--blue-dark)}
+.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.btn-cancel{
+  padding:12px;background:var(--bg);color:var(--text-muted);border:none;
+  border-radius:11px;font-size:14px;font-weight:800;cursor:pointer;
+  font-family:'Nunito',sans-serif;transition:all .2s;
+}
+.btn-cancel:hover{background:var(--border);color:var(--text)}
+.btn-save{
+  padding:12px;background:var(--blue);color:white;border:none;
+  border-radius:11px;font-size:14px;font-weight:800;cursor:pointer;
+  font-family:'Nunito',sans-serif;transition:all .2s;
+}
+.btn-save:hover{background:var(--blue-dark)}
+.btn-danger-full{
+  width:100%;padding:12px;background:var(--red-light);color:var(--red);border:none;
+  border-radius:11px;font-size:14px;font-weight:800;cursor:pointer;
+  font-family:'Nunito',sans-serif;transition:all .2s;margin-top:8px;
+}
+.btn-danger-full:hover{background:var(--red);color:white}
+
+/* ─────────────────────────────────────────
+   SCHEDULE
+───────────────────────────────────────── */
+.schedule-grid{display:grid;grid-template-columns:320px 1fr;gap:18px}
+.calendar-card{background:var(--white);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-month{font-family:'Nunito',sans-serif;font-size:17px;font-weight:900;color:var(--text)}
+.cal-nav{
+  background:none;border:2px solid var(--border);border-radius:8px;
+  width:30px;height:30px;cursor:pointer;font-size:15px;color:var(--text-muted);
+  display:flex;align-items:center;justify-content:center;transition:all .2s;
+}
+.cal-nav:hover{border-color:var(--blue);color:var(--blue)}
+.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:6px}
+.cal-weekday{text-align:center;font-size:10px;font-weight:800;color:var(--text-muted);padding:3px;text-transform:uppercase;letter-spacing:.5px}
+.cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-day{
+  aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;
+  transition:all .15s;color:var(--text);position:relative;
+}
+.cal-day:hover{background:var(--blue-pale)}
+.cal-day.other-month{color:var(--text-light)}
+.cal-day.today{background:var(--blue);color:white;font-weight:800}
+.cal-day.has-dose::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--blue)}
+.cal-day.today.has-dose::after{background:white}
+.schedule-list-card{background:var(--white);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.schedule-date-title{font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;color:var(--text);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.dose-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:11px;margin-bottom:8px;border:1px solid var(--border);transition:all .15s;cursor:pointer}
+.dose-item:hover{background:var(--blue-pale);border-color:var(--blue)}
+.dose-time{background:var(--blue-pale);color:var(--blue);padding:5px 10px;border-radius:7px;font-size:12px;font-weight:800;font-family:'Nunito',sans-serif;white-space:nowrap}
+.dose-info{flex:1}
+.dose-name{font-weight:800;font-size:14px;color:var(--text)}
+.dose-detail{font-size:12px;color:var(--text-muted)}
+.dose-check{width:22px;height:22px;border:2px solid var(--border);border-radius:50%;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dose-check.checked{background:var(--green);border-color:var(--green)}
+.dose-check.checked::after{content:'✓';color:white;font-size:12px;font-weight:900}
+.btn-add-dose{width:100%;padding:11px;background:none;border:2px dashed var(--border);border-radius:11px;font-size:13px;font-weight:700;color:var(--text-muted);cursor:pointer;font-family:'Nunito',sans-serif;transition:all .2s}
+.btn-add-dose:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-pale)}
+
+/* ─────────────────────────────────────────
+   EXPIRY WATCH
+───────────────────────────────────────── */
+.expiry-watch-grid{display:grid;gap:11px}
+.expiry-item{background:var(--white);border-radius:var(--radius);padding:16px 20px;box-shadow:var(--shadow);display:grid;grid-template-columns:6px 1fr auto;gap:14px;align-items:center}
+.exp-bar{border-radius:3px;min-height:40px}
+.exp-bar.red{background:var(--red)}.exp-bar.orange{background:var(--orange)}.exp-bar.green{background:var(--green)}
+.expiry-days-badge{padding:7px 14px;border-radius:9px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;text-align:center;white-space:nowrap}
+.expiry-days-badge.red{background:var(--red-light);color:var(--red)}
+.expiry-days-badge.orange{background:var(--orange-light);color:var(--orange)}
+.expiry-days-badge.green{background:var(--green-light);color:var(--green)}
+
+/* ─────────────────────────────────────────
+   SHOPPING LIST
+───────────────────────────────────────── */
+.shopping-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap}
+.btn-add-inventory{
+  display:flex;align-items:center;gap:7px;padding:10px 18px;
+  background:var(--green);color:white;border:none;border-radius:50px;
+  font-size:13px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;
+  transition:all .2s;
+}
+.btn-add-inventory:hover{background:#16A34A;transform:translateY(-1px);box-shadow:0 4px 12px rgba(34,197,94,.3)}
+.shopping-list-wrap{background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.shopping-item{
+  display:flex;align-items:center;gap:12px;padding:14px 18px;
+  border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer;
+}
+.shopping-item:last-child{border-bottom:none}
+.shopping-item:hover{background:var(--blue-pale)}
+.shopping-check{width:21px;height:21px;border:2px solid var(--border);border-radius:6px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.shopping-check.checked{background:var(--green);border-color:var(--green)}
+.shopping-check.checked::after{content:'✓';color:white;font-size:12px;font-weight:900}
+.shopping-name{flex:1;font-size:14px;font-weight:700;color:var(--text)}
+.shopping-name.done{text-decoration:line-through;color:var(--text-light)}
+.shopping-qty-label{font-size:12px;color:var(--text-muted);font-weight:600}
+.shopping-delete{cursor:pointer;color:var(--text-light);padding:4px;border-radius:6px;transition:all .2s}
+.shopping-delete:hover{color:var(--red);background:var(--red-light)}
+.btn-add-shop-item{
+  width:100%;padding:13px;background:none;border:none;
+  font-size:13px;font-weight:700;color:var(--blue);cursor:pointer;
+  font-family:'Nunito',sans-serif;display:flex;align-items:center;
+  justify-content:center;gap:7px;transition:background .2s;
+}
+.btn-add-shop-item:hover{background:var(--blue-pale)}
+
+/* ─────────────────────────────────────────
+   ACTIVITY LOG
+───────────────────────────────────────── */
+.activity-item{
+  display:flex;align-items:center;gap:12px;padding:14px 18px;
+  border-bottom:1px solid var(--border);transition:background .15s;
+}
+.activity-item:hover{background:var(--blue-pale)}
+.activity-item:last-child{border-bottom:none}
+.activity-icon-wrap{font-size:20px;flex-shrink:0}
+.activity-info{flex:1}
+.activity-title{font-weight:700;font-size:14px;color:var(--text)}
+.activity-date{font-size:11px;color:var(--text-muted);margin-top:2px}
+.btn-undo{
+  padding:5px 13px;background:var(--orange-light);color:var(--orange);
+  border:none;border-radius:50px;font-size:12px;font-weight:800;
+  cursor:pointer;font-family:'Nunito',sans-serif;transition:all .2s;flex-shrink:0;
+}
+.btn-undo:hover{background:var(--orange);color:white}
+
+/* ─────────────────────────────────────────
+   PHARMACIES
+───────────────────────────────────────── */
+.pharmacy-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.pharmacy-card{
+  background:var(--white);border-radius:var(--radius);padding:20px;
+  box-shadow:var(--shadow);transition:all .2s;cursor:pointer;border:1.5px solid transparent;
+}
+.pharmacy-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:var(--blue-light)}
+.pharmacy-name{font-family:'Nunito',sans-serif;font-size:17px;font-weight:900;color:var(--text);margin-bottom:4px}
+.pharmacy-brand{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:10px}
+.pharmacy-row{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text-muted);margin-bottom:5px}
+.pharmacy-row svg{flex-shrink:0;color:var(--blue)}
+.pharmacy-distance{
+  display:inline-flex;align-items:center;gap:4px;
+  background:var(--green-light);color:var(--green);
+  padding:3px 10px;border-radius:50px;font-size:11px;font-weight:800;
+  margin-bottom:12px;
+}
+.pharmacy-open{color:var(--green);font-weight:700}
+.pharmacy-closed{color:var(--red);font-weight:700}
+.btn-directions{
+  width:100%;padding:10px;background:var(--blue);color:white;border:none;
+  border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;
+  font-family:'Nunito',sans-serif;transition:all .2s;
+}
+.btn-directions:hover{background:var(--blue-dark)}
+.pharmacy-demo-note{
+  background:var(--orange-light);border-radius:var(--radius-sm);
+  padding:12px 16px;font-size:13px;color:#92400E;font-weight:600;
+  margin-bottom:18px;display:flex;align-items:center;gap:8px;
+}
+
+/* ─────────────────────────────────────────
+   PROFILE
+───────────────────────────────────────── */
+.profile-hero{
+  background:linear-gradient(135deg,var(--blue) 0%,var(--blue-dark) 100%);
+  border-radius:var(--radius);padding:28px;color:white;
+  display:flex;align-items:center;gap:18px;margin-bottom:18px;
+  box-shadow:0 8px 24px rgba(0,144,255,.25);
+}
+.profile-avatar{
+  width:68px;height:68px;border-radius:50%;
+  background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;
+  font-family:'Nunito',sans-serif;font-size:26px;font-weight:900;flex-shrink:0;
+  border:3px solid rgba(255,255,255,.4);
+}
+.profile-name-big{font-family:'Nunito',sans-serif;font-size:22px;font-weight:900}
+.profile-email-small{font-size:13px;opacity:.85;margin-top:2px}
+.settings-section{background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:16px}
+.settings-section-title{padding:12px 18px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);background:var(--blue-pale)}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);transition:background .15s}
+.settings-row:last-child{border-bottom:none}
+.settings-row:hover{background:var(--blue-pale)}
+.settings-row-label{font-size:14px;font-weight:600;color:var(--text)}
+.settings-row-sub{font-size:12px;color:var(--text-muted);margin-top:2px}
+.editable-field-wrap{display:flex;align-items:center;gap:8px}
+.editable-field{
+  padding:7px 12px;border:2px solid transparent;border-radius:8px;
+  font-size:14px;font-family:'Nunito Sans',sans-serif;color:var(--text);
+  background:transparent;outline:none;min-width:180px;transition:all .2s;
+}
+.editable-field:focus{border-color:var(--blue);background:var(--white);box-shadow:0 0 0 3px rgba(0,144,255,.1)}
+.btn-save-field{
+  padding:5px 13px;background:var(--blue);color:white;border:none;
+  border-radius:7px;font-size:12px;font-weight:800;cursor:pointer;
+  font-family:'Nunito',sans-serif;transition:all .2s;
+}
+.btn-save-field:hover{background:var(--blue-dark)}
+
+/* ─────────────────────────────────────────
+   SETTINGS
+───────────────────────────────────────── */
+.toggle{width:42px;height:22px;background:var(--border);border-radius:50px;cursor:pointer;transition:background .2s;position:relative}
+.toggle.on{background:var(--blue)}
+.toggle::after{content:'';position:absolute;width:16px;height:16px;background:white;border-radius:50%;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle.on::after{left:23px}
+
+/* ─────────────────────────────────────────
+   ABOUT
+───────────────────────────────────────── */
+.about-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:60vh}
+.about-card{background:var(--white);border-radius:var(--radius);padding:36px 40px;max-width:560px;width:100%;box-shadow:var(--shadow);text-align:center}
+.about-logo-big{font-family:'Nunito',sans-serif;font-size:60px;font-weight:900;color:var(--blue);line-height:1;display:block}
+.about-badge{background:var(--blue);color:white;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;letter-spacing:2px;padding:4px 18px;border-radius:50px;display:inline-block;margin-top:-4px}
+.about-card p{font-size:14px;color:var(--text-muted);margin-top:14px;line-height:1.6}
+
+/* Golden rules */
+.golden-banner{background:linear-gradient(135deg,#0090FF 0%,#0060CC 100%);border-radius:var(--radius);padding:18px 22px;color:white;margin-top:18px;cursor:pointer;user-select:none;max-width:560px;width:100%}
+.golden-banner-title{font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;display:flex;align-items:center;gap:8px;justify-content:space-between}
+.golden-rules-content{display:none;margin-top:12px}
+.golden-rules-content.open{display:block}
+.golden-rule{display:flex;gap:9px;margin-bottom:9px;align-items:flex-start}
+.golden-rule-num{width:20px;height:20px;background:rgba(255,255,255,.2);border-radius:50%;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.golden-rule-text{font-size:12px;line-height:1.5}
+.golden-rule-text strong{font-weight:800}
+
+/* ─────────────────────────────────────────
+   STATUS BADGES
+───────────────────────────────────────── */
+.status-badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:50px;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase}
+.status-badge.expired{background:var(--red-light);color:var(--red)}
+.status-badge.expiring{background:var(--orange-light);color:var(--orange)}
+.status-badge.indate{background:var(--green-light);color:var(--green)}
+
+/* ─────────────────────────────────────────
+   TOAST
+───────────────────────────────────────── */
+.toast-container{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:2000;display:flex;flex-direction:column;gap:7px;align-items:center}
+.toast{background:var(--green);color:white;padding:11px 22px;border-radius:50px;font-size:14px;font-weight:800;font-family:'Nunito',sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.15);animation:toastIn .3s ease;white-space:nowrap}
+.toast.error{background:var(--red)}
+.toast.info{background:var(--blue)}
+.toast.warn{background:var(--orange)}
+@keyframes toastIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─────────────────────────────────────────
+   CONFIRM MODAL
+───────────────────────────────────────── */
+.confirm-modal{max-width:360px;text-align:center}
+.confirm-icon{font-size:44px;margin-bottom:10px}
+.confirm-title{font-family:'Nunito',sans-serif;font-size:18px;font-weight:900;margin-bottom:6px}
+.confirm-msg{font-size:13px;color:var(--text-muted);margin-bottom:20px}
+
+/* ─────────────────────────────────────────
+   SCROLLBAR
+───────────────────────────────────────── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text-light)}
+
+/* ─────────────────────────────────────────
+   MISC UTILS
+───────────────────────────────────────── */
+.divider{height:1px;background:var(--border);margin:16px 0}
+.hint-chip{display:inline-flex;align-items:center;gap:5px;background:var(--orange-light);color:#92400E;padding:4px 11px;border-radius:50px;font-size:11px;font-weight:700;margin-bottom:14px}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════ -->
-<!--  LOGIN VIEW                                 -->
-<!-- ═══════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════
+     LOGIN VIEW
+══════════════════════════════════════ -->
 <div id="login-view" class="view active">
-  <div class="login-card">
-    <div class="logo-wrap">
-      <div class="logo-big">Med</div>
-      <div class="logo-badge">TRACKER DEMO</div>
-    </div>
 
+  <!-- Logo (separate from card) -->
+  <div class="login-logo-wrap">
+    <div class="login-logo-big">Med</div>
+    <div class="login-logo-right">
+      <div class="login-badge">TRACKER</div>
+      <div class="demo-badge">⚡ DEMO VERSION</div>
+    </div>
+  </div>
+
+  <!-- Login card -->
+  <div class="login-card">
     <div class="form-group">
       <div class="login-label">Email or Phone Number</div>
-      <input type="text" class="login-input" id="login-email" placeholder="e.g. juandelacruz@gmail.com" autocomplete="username">
+      <div class="login-input-wrap">
+        <input type="text" class="login-input" id="login-email" placeholder="e.g. juandelacruz@gmail.com" autocomplete="username">
+      </div>
       <div class="error-msg" id="email-error">Please enter your email or phone number.</div>
     </div>
-
     <div class="form-group">
       <div class="login-label">Password</div>
-      <input type="password" class="login-input" id="login-password" placeholder="Enter your password" autocomplete="current-password">
+      <div class="login-input-wrap">
+        <input type="password" class="login-input has-eye" id="login-password" placeholder="Enter your password" autocomplete="current-password">
+        <button class="pw-toggle" onclick="togglePw()" id="pw-toggle-btn" title="Show/hide password">
+          <!-- Eye closed (default) -->
+          <svg id="eye-closed" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+            <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+            <line x1="1" y1="1" x2="23" y2="23"/>
+          </svg>
+          <!-- Eye open (hidden) -->
+          <svg id="eye-open" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
       <div class="error-msg" id="pass-error">Please enter your password.</div>
     </div>
-
     <button class="btn-login" onclick="doLogin()">Log in</button>
-
     <div class="login-links">
-      <a class="link-red" onclick="showToast('Password reset link sent! (demo)', 'info')">Forgot Password</a>
+      <a class="link-red" onclick="showToast('Password reset link sent! (demo)','info')">Forgot Password</a>
       <a class="link-blue" onclick="guestLogin()">Sign in as Guest</a>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!--  APP VIEW                                   -->
-<!-- ═══════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════
+     APP VIEW
+══════════════════════════════════════ -->
 <div id="app-view" class="view">
-
-  <!-- Sidebar overlay (mobile) -->
   <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 
-  <!-- ─── SIDEBAR ─────────────────────────── -->
+  <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-      <div class="logo-big" style="font-size:32px">Med</div>
-      <div class="logo-badge" style="font-size:10px;padding:3px 12px">TRACKER DEMO</div>
+      <div class="sidebar-logo-row">
+        <div>
+          <div class="logo-big" style="font-family:'Nunito',sans-serif;font-size:28px;font-weight:900;color:var(--blue)">Med</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div class="logo-badge">TRACKER</div>
+          <div class="demo-sm">DEMO</div>
+        </div>
+      </div>
     </div>
-
     <nav class="sidebar-nav">
       <div class="nav-item active" data-page="home" onclick="navTo('home',this)">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
-        Home
-      </div>
-      <div class="nav-item" data-page="cabinet" onclick="navTo('cabinet',this)">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.5 20H4a2 2 0 01-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 011.66.9l.82 1.2a2 2 0 001.66.9H20a2 2 0 012 2v3"/><circle cx="18" cy="18" r="3"/><path d="M18 15v3l2 1"/></svg>
-        Medicine Cabinet
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>Home
       </div>
       <div class="nav-item" data-page="schedule" onclick="navTo('schedule',this)">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        Schedule
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Schedule
       </div>
       <div class="nav-item" data-page="expiry" onclick="navTo('expiry',this)">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
-        Expiry Watch
-      </div>
-      <div class="nav-item" data-page="treatment" onclick="navTo('treatment',this)">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-        Treatment Plans
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>Expiry Watch
       </div>
       <div class="nav-item" data-page="shopping" onclick="navTo('shopping',this)">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
-        Shopping List
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>Shopping List
       </div>
       <div class="nav-item" data-page="activity" onclick="navTo('activity',this)">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        Activity Log
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>Activity Log
+      </div>
+      <div class="nav-item" data-page="pharmacies" onclick="navTo('pharmacies',this)">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Nearby Pharmacies
       </div>
     </nav>
-
     <div class="sidebar-footer">
       <div class="nav-item" data-page="profile" onclick="navTo('profile',this)">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        Profile
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile
       </div>
       <div class="nav-item" data-page="settings" onclick="navTo('settings',this)">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-        Settings
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings
       </div>
       <div class="nav-item" data-page="about" onclick="navTo('about',this)">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        About
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>About
       </div>
     </div>
   </aside>
 
-  <!-- ─── MAIN CONTENT ──────────────────────── -->
-  <main class="main-content">
+  <!-- MAIN CONTENT -->
+  <main class="main-content" id="main-content">
     <header class="topbar">
-      <button class="btn-scan" onclick="toggleSidebar()" style="border:none;background:none;padding:8px;cursor:pointer" title="Menu">
-        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <button class="hamburger-btn" onclick="toggleSidebar()" title="Toggle Sidebar">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <div class="topbar-title" id="topbar-title">Dashboard</div>
-      <button class="btn-scan" onclick="showToast('Scan feature coming soon!', 'info')">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 7 23 1 17 1"/><polyline points="1 17 1 23 7 23"/><polyline points="23 17 23 23 17 23"/><polyline points="1 7 1 1 7 1"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="12" y1="8" x2="12" y2="16"/></svg>
-        Scan
-      </button>
       <button class="btn-add" onclick="openAddModal()">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
         Add New
       </button>
     </header>
 
     <div class="page-content">
 
-      <!-- ═══ HOME PAGE ═══ -->
+      <!-- ════ HOME ════ -->
       <div class="page-section active" id="page-home">
-        <div class="greeting">Hi, <span id="greeting-name">Juan</span>! 👋</div>
-
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+          <div class="greeting">Hi, <span id="greeting-name">Juan</span>! 👋</div>
+        </div>
         <div class="stat-cards">
-          <div class="stat-card total active-tab" onclick="filterView('all', this)" id="card-total">
-            <div class="stat-label">💊 Total Items</div>
+          <div class="stat-card total active-tab" onclick="filterView('all',this)" id="card-total">
+            <div class="stat-icon-big">💊</div>
+            <div class="stat-label">Total Items</div>
             <div class="stat-num" id="count-total">0</div>
           </div>
-          <div class="stat-card expiring" onclick="filterView('expiring', this)" id="card-expiring">
-            <div class="stat-label">⚠️ Expiring / Expired</div>
+          <div class="stat-card expiring" onclick="filterView('expiring',this)" id="card-expiring">
+            <div class="stat-icon-big">⚠️</div>
+            <div class="stat-label">Expiring/Expired</div>
             <div class="stat-num" id="count-expiring">0</div>
           </div>
-          <div class="stat-card safe" onclick="filterView('safe', this)" id="card-safe">
-            <div class="stat-label">✅ Safe to Use</div>
+          <div class="stat-card safe" onclick="filterView('safe',this)" id="card-safe">
+            <div class="stat-icon-big">✅</div>
+            <div class="stat-label">Safe To Use</div>
             <div class="stat-num" id="count-safe">0</div>
           </div>
         </div>
-
-        <div class="inventory-header">
+        <!-- Controls -->
+        <div class="dash-controls">
           <div class="section-title" id="inv-section-title">EVERYTHING IN INVENTORY</div>
-          <div class="search-filter-row">
-            <div class="search-wrap">
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input type="text" class="search-input" id="med-search" placeholder="Search (e.g. 'Fever', 'Pain', 'Antibiotics')" oninput="renderMedList()">
-            </div>
-            <div style="position:relative">
-              <button class="btn-filter" onclick="toggleFilter()">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-                Filter
-              </button>
-              <div class="filter-dropdown" id="filter-dropdown">
-                <div class="filter-group-title">Status</div>
-                <label class="filter-option"><input type="checkbox" checked id="f-expiring" onchange="renderMedList()"><span class="expiring-tag">Expiring Soon</span></label>
-                <label class="filter-option"><input type="checkbox" checked id="f-indate" onchange="renderMedList()"><span class="indate-tag">In-date</span></label>
-                <label class="filter-option"><input type="checkbox" checked id="f-expired" onchange="renderMedList()"><span class="expired-tag">Expired</span></label>
-                <div class="filter-group-title">Category</div>
-                <label class="filter-option"><input type="checkbox" checked data-cat="Analgesics" onchange="renderMedList()"><span class="cat-tag">Analgesics</span></label>
-                <label class="filter-option"><input type="checkbox" checked data-cat="Antibiotics" onchange="renderMedList()"><span class="cat-tag">Antibiotics</span></label>
-                <label class="filter-option"><input type="checkbox" checked data-cat="Antidiabetic" onchange="renderMedList()"><span class="cat-tag">Antidiabetic</span></label>
-                <label class="filter-option"><input type="checkbox" checked data-cat="Gastrointestinal" onchange="renderMedList()"><span class="cat-tag">Gastrointestinal</span></label>
-                <label class="filter-option"><input type="checkbox" checked data-cat="Statin" onchange="renderMedList()"><span class="cat-tag">Statin</span></label>
-                <label class="filter-option"><input type="checkbox" checked data-cat="Supplements" onchange="renderMedList()"><span class="cat-tag">Supplements</span></label>
-                <label class="filter-option"><input type="checkbox" checked data-cat="Infant" onchange="renderMedList()"><span class="cat-tag">Infant</span></label>
-              </div>
+          <div class="search-wrap">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" class="search-input" id="med-search" placeholder="Search (e.g. 'Fever','Pain')" oninput="renderMedCards()">
+          </div>
+          <!-- SORT -->
+          <div style="position:relative">
+            <button class="btn-sort" onclick="toggleSort()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="13" y2="18"/></svg>
+              Sort
+            </button>
+            <div class="sort-dropdown" id="sort-dropdown">
+              <div class="sort-opt active" data-sort="default" onclick="setSort('default',this)">📋 Default Order</div>
+              <div class="sort-opt" data-sort="expiry-asc" onclick="setSort('expiry-asc',this)">⏰ Expiry – Soonest First</div>
+              <div class="sort-opt" data-sort="expiry-desc" onclick="setSort('expiry-desc',this)">⏰ Expiry – Latest First</div>
+              <div class="sort-opt" data-sort="name-asc" onclick="setSort('name-asc',this)">🔡 Name – A → Z</div>
+              <div class="sort-opt" data-sort="name-desc" onclick="setSort('name-desc',this)">🔡 Name – Z → A</div>
+              <div class="sort-opt" data-sort="qty-asc" onclick="setSort('qty-asc',this)">🔢 Quantity – Low → High</div>
+              <div class="sort-opt" data-sort="qty-desc" onclick="setSort('qty-desc',this)">🔢 Quantity – High → Low</div>
             </div>
           </div>
-        </div>
-
-        <!-- Table view -->
-        <div class="med-table" id="med-table-wrap">
-          <div class="med-table-header">
-            <span>Item Name (Generic)</span>
-            <span>Category</span>
-            <span>Qty</span>
-            <span>Expiry</span>
-            <span>Status</span>
+          <!-- FILTER -->
+          <div style="position:relative">
+            <button class="btn-filter-dash" onclick="toggleFilter()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/></svg>
+              Filter
+            </button>
+            <div class="filter-dropdown" id="filter-dropdown">
+              <div class="filter-group-label">Status</div>
+              <label class="filter-opt"><input type="checkbox" checked id="f-expiring" onchange="renderMedCards()"><span style="color:var(--orange)">Expiring Soon</span></label>
+              <label class="filter-opt"><input type="checkbox" checked id="f-indate" onchange="renderMedCards()"><span style="color:var(--green)">In-date</span></label>
+              <label class="filter-opt"><input type="checkbox" checked id="f-expired" onchange="renderMedCards()"><span style="color:var(--red)">Expired</span></label>
+            </div>
           </div>
-          <div id="med-table-body"></div>
         </div>
+        <div class="med-cards" id="med-cards-wrap"></div>
       </div>
 
-      <!-- ═══ MEDICINE CABINET ═══ -->
-      <div class="page-section" id="page-cabinet">
-        <div class="page-header">
-          <div class="page-heading">Juan's Medicine Cabinet</div>
-        </div>
-        <div class="cabinet-header" id="cabinet-stats"></div>
-        <div class="med-table cabinet-table" id="cabinet-table">
-          <div class="med-table-header" style="grid-template-columns:2.5fr 1.5fr 1.5fr 1.2fr">
-            <span>Medicine (Generic + Brand)</span>
-            <span>Category</span>
-            <span>Expiry Date</span>
-            <span>Status</span>
-          </div>
-          <div id="cabinet-body"></div>
-        </div>
-      </div>
-
-      <!-- ═══ SCHEDULE ═══ -->
+      <!-- ════ SCHEDULE ════ -->
       <div class="page-section" id="page-schedule">
         <div class="page-header">
           <div class="page-heading">📅 My Schedule</div>
@@ -1695,12 +788,7 @@
               <div class="cal-month" id="cal-month-label"></div>
               <button class="cal-nav" onclick="changeMonth(1)">›</button>
             </div>
-            <div class="cal-weekdays">
-              <div class="cal-weekday">Su</div><div class="cal-weekday">Mo</div>
-              <div class="cal-weekday">Tu</div><div class="cal-weekday">We</div>
-              <div class="cal-weekday">Th</div><div class="cal-weekday">Fr</div>
-              <div class="cal-weekday">Sa</div>
-            </div>
+            <div class="cal-weekdays"><div class="cal-weekday">Su</div><div class="cal-weekday">Mo</div><div class="cal-weekday">Tu</div><div class="cal-weekday">We</div><div class="cal-weekday">Th</div><div class="cal-weekday">Fr</div><div class="cal-weekday">Sa</div></div>
             <div class="cal-days" id="cal-days"></div>
           </div>
           <div class="schedule-list-card">
@@ -1711,135 +799,138 @@
         </div>
       </div>
 
-      <!-- ═══ EXPIRY WATCH ═══ -->
+      <!-- ════ EXPIRY WATCH ════ -->
       <div class="page-section" id="page-expiry">
-        <div class="page-header">
-          <div class="page-heading">⏰ Expiry Watch</div>
-        </div>
-        <div class="hint-text">Items expiring within 30 days are flagged automatically</div>
+        <div class="page-header"><div class="page-heading">⏰ Expiry Watch</div></div>
+        <div class="hint-chip">⚡ Items expiring within 30 days are flagged automatically</div>
         <div class="expiry-watch-grid" id="expiry-watch-list"></div>
       </div>
 
-      <!-- ═══ TREATMENT PLANS ═══ -->
-      <div class="page-section" id="page-treatment">
-        <div class="page-header">
-          <div class="page-heading">📋 Treatment Plans</div>
-          <button class="btn-add" onclick="openAddTreatmentModal()">+ New Plan</button>
-        </div>
-        <div id="treatment-list"></div>
-      </div>
-
-      <!-- ═══ SHOPPING LIST ═══ -->
+      <!-- ════ SHOPPING LIST ════ -->
       <div class="page-section" id="page-shopping">
-        <div class="page-header">
+        <div class="shopping-topbar">
           <div class="page-heading">🛒 Shopping List</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn-add-inventory" onclick="addCheckedToInventory()" title="Add checked items to inventory">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
+              Add Checked to Inventory
+            </button>
+            <button class="btn-add" onclick="openShopAddModal()" style="background:var(--blue)">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+              Add Item
+            </button>
+          </div>
         </div>
-        <div class="hint-text">Items that are expired or running low are auto-suggested</div>
-        <div class="shopping-list" id="shopping-list-wrap">
+        <div class="hint-chip">💡 Expired medicines are auto-suggested below</div>
+        <div class="shopping-list-wrap">
           <div id="shopping-items"></div>
-          <button class="btn-add-item" onclick="addShoppingItem()">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          <button class="btn-add-shop-item" onclick="openShopAddModal()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
             Add Item Manually
           </button>
         </div>
       </div>
 
-      <!-- ═══ ACTIVITY LOG ═══ -->
+      <!-- ════ ACTIVITY LOG ════ -->
       <div class="page-section" id="page-activity">
-        <div class="page-header">
-          <div class="page-heading">📝 Activity Log</div>
-        </div>
-        <div class="med-table" id="activity-log-wrap">
+        <div class="page-header"><div class="page-heading">📝 Activity Log</div></div>
+        <div style="background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)">
           <div id="activity-log-body"></div>
         </div>
       </div>
 
-      <!-- ═══ PROFILE ═══ -->
-      <div class="page-section" id="page-profile">
-        <div class="profile-header">
-          <div class="profile-avatar" id="profile-avatar">J</div>
-          <div>
-            <div class="profile-name" id="profile-name-disp">Juan Dela Cruz</div>
-            <div class="profile-email" id="profile-email-disp">juandelacruz@gmail.com</div>
-          </div>
+      <!-- ════ NEARBY PHARMACIES ════ -->
+      <div class="page-section" id="page-pharmacies">
+        <div class="page-header"><div class="page-heading">📍 Nearby Pharmacies</div></div>
+        <div class="pharmacy-demo-note">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>These are <strong>example pharmacies</strong> in Manila, Philippines. In a real app, GPS would show your actual nearby locations.</span>
         </div>
-        <div class="settings-section">
-          <div class="settings-section-title">Account Info</div>
-          <div class="settings-row"><div><div class="settings-row-label">Full Name</div><div class="settings-row-sub" id="prof-name">Juan Dela Cruz</div></div></div>
-          <div class="settings-row"><div><div class="settings-row-label">Email / Phone</div><div class="settings-row-sub" id="prof-email">juandelacruz@gmail.com</div></div></div>
-          <div class="settings-row"><div><div class="settings-row-label">Member Since</div><div class="settings-row-sub">January 2025</div></div></div>
-        </div>
-        <button class="btn-logout" onclick="doLogout()">🚪 Log Out</button>
+        <div class="pharmacy-grid" id="pharmacy-grid"></div>
       </div>
 
-      <!-- ═══ SETTINGS ═══ -->
-      <div class="page-section" id="page-settings">
-        <div class="page-heading" style="margin-bottom:20px">⚙️ Settings</div>
-        <div class="settings-section">
-          <div class="settings-section-title">Notifications</div>
-          <div class="settings-row">
-            <div><div class="settings-row-label">Expiry Alerts</div><div class="settings-row-sub">Notify 7 days before expiry</div></div>
-            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-          </div>
-          <div class="settings-row">
-            <div><div class="settings-row-label">Dose Reminders</div><div class="settings-row-sub">Get reminded to take medicine</div></div>
-            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-          </div>
-          <div class="settings-row">
-            <div><div class="settings-row-label">Low Stock Alerts</div><div class="settings-row-sub">Alert when qty falls below 5</div></div>
-            <div class="toggle" onclick="this.classList.toggle('on')"></div>
+      <!-- ════ PROFILE ════ -->
+      <div class="page-section" id="page-profile">
+        <div class="profile-hero">
+          <div class="profile-avatar" id="profile-avatar-disp">J</div>
+          <div>
+            <div class="profile-name-big" id="profile-name-hero">Juan Dela Cruz</div>
+            <div class="profile-email-small" id="profile-email-hero">juandelacruz@gmail.com</div>
           </div>
         </div>
         <div class="settings-section">
-          <div class="settings-section-title">Preferences</div>
+          <div class="settings-section-title">Edit Account Info</div>
           <div class="settings-row">
-            <div><div class="settings-row-label">Date Format</div><div class="settings-row-sub">DD/MM/YYYY</div></div>
-            <button class="btn-edit" onclick="showToast('Date format saved!', 'info')">Change</button>
+            <div><div class="settings-row-label">Full Name</div><div class="settings-row-sub">Changes your name across the app</div></div>
+            <div class="editable-field-wrap">
+              <input type="text" class="editable-field" id="edit-fullname" value="Juan Dela Cruz">
+              <button class="btn-save-field" onclick="saveFullName()">Save</button>
+            </div>
           </div>
           <div class="settings-row">
-            <div><div class="settings-row-label">Expiry Warning Threshold</div><div class="settings-row-sub">30 days before expiry</div></div>
-            <button class="btn-edit" onclick="showToast('Threshold saved!', 'info')">Change</button>
+            <div><div class="settings-row-label">Email</div></div>
+            <div class="editable-field-wrap">
+              <input type="email" class="editable-field" id="edit-email" value="juandelacruz@gmail.com">
+              <button class="btn-save-field" onclick="saveEmail()">Save</button>
+            </div>
           </div>
+          <div class="settings-row">
+            <div><div class="settings-row-label">Phone Number</div></div>
+            <div class="editable-field-wrap">
+              <input type="tel" class="editable-field" id="edit-phone" placeholder="+63 9XX XXX XXXX">
+              <button class="btn-save-field" onclick="savePhone()">Save</button>
+            </div>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-section-title">Account</div>
+          <div class="settings-row"><div><div class="settings-row-label">Member Since</div><div class="settings-row-sub">January 2025</div></div></div>
+        </div>
+        <button class="btn-danger-full" onclick="doLogout()">🚪 Log Out</button>
+      </div>
+
+      <!-- ════ SETTINGS ════ -->
+      <div class="page-section" id="page-settings">
+        <div class="page-heading" style="margin-bottom:18px">⚙️ Settings</div>
+        <div class="settings-section">
+          <div class="settings-section-title">Notifications</div>
+          <div class="settings-row"><div><div class="settings-row-label">Expiry Alerts</div><div class="settings-row-sub">Notify 7 days before expiry</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="settings-row"><div><div class="settings-row-label">Dose Reminders</div><div class="settings-row-sub">Remind to take medicine</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="settings-row"><div><div class="settings-row-label">Low Stock Alerts</div><div class="settings-row-sub">Alert when qty falls below 5</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
         </div>
         <div class="settings-section">
           <div class="settings-section-title">Data</div>
-          <div class="settings-row" style="cursor:pointer" onclick="showToast('Demo: data exported!', 'info')">
-            <div><div class="settings-row-label">Export My Data</div><div class="settings-row-sub">Download as CSV</div></div>
-            <svg width="18" height="18" fill="none" stroke="var(--text-muted)" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <div class="settings-row" style="cursor:pointer" onclick="showToast('Demo: data exported as CSV!','info')"><div><div class="settings-row-label">Export My Data</div><div class="settings-row-sub">Download as CSV</div></div>
+            <svg width="16" height="16" fill="none" stroke="var(--text-muted)" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           </div>
-          <div class="settings-row" style="cursor:pointer" onclick="confirmClearData()">
-            <div><div class="settings-row-label" style="color:var(--red)">Clear All Data</div><div class="settings-row-sub">This action cannot be undone</div></div>
-            <svg width="18" height="18" fill="none" stroke="var(--red)" stroke-width="2" viewBox="0 0 24 24"><polyline points="3,6 5,6 21,6"/><path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2"/></svg>
+          <div class="settings-row" style="cursor:pointer" onclick="confirmClearData()"><div><div class="settings-row-label" style="color:var(--red)">Clear All Data</div><div class="settings-row-sub">Removes all medicines, schedule, activity & shopping list</div></div>
+            <svg width="16" height="16" fill="none" stroke="var(--red)" stroke-width="2" viewBox="0 0 24 24"><polyline points="3,6 5,6 21,6"/><path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2"/></svg>
           </div>
         </div>
       </div>
 
-      <!-- ═══ ABOUT ═══ -->
+      <!-- ════ ABOUT ════ -->
       <div class="page-section" id="page-about">
-        <div class="page-heading" style="margin-bottom:20px">About MedTracker</div>
-        <div class="about-card">
-          <span class="logo-big">Med</span>
-          <div class="logo-badge">TRACKER DEMO</div>
-          <p>MedTracker is your personal home medicine inventory management system. Track expiry dates, manage dosage schedules, and never run out of essential medicines.</p>
-          <p style="margin-top:12px">Designed following <strong>Shneiderman's 8 Golden Rules of Interface Design</strong> to ensure a consistent, efficient, and user-friendly experience.</p>
-          <div class="about-version">Version 1.0 · HCI Group 8 Project 2026</div>
-        </div>
-
-        <!-- 8 Golden Rules Panel -->
-        <div class="golden-banner" style="margin-top:20px" onclick="toggleGoldenRules()">
-          <div class="golden-banner-title">
-            🏆 Shneiderman's 8 Golden Rules of Interface Design
-            <span id="golden-toggle-icon">▼</span>
+        <div class="about-center">
+          <div class="about-card">
+            <span class="about-logo-big">Med</span>
+            <div class="about-badge">TRACKER</div>
+            <p>MedTracker is your personal home medicine inventory management system. Track expiry dates, manage dosage schedules, and never run out of essential medicines.</p>
+            <p style="margin-top:10px">Designed following <strong>Shneiderman's 8 Golden Rules of Interface Design</strong> to ensure a consistent, efficient, and user-friendly experience.</p>
+            <p style="margin-top:10px;font-size:12px;color:var(--text-light)">DEMO Version · HCI Group 8 Project</p>
           </div>
-          <div class="golden-rules-content" id="golden-rules-content">
-            <div class="golden-rule"><div class="golden-rule-num">1</div><div class="golden-rule-text"><strong>Strive for Consistency</strong> — Uniform button styles, colors, typography, and navigation across all pages. The blue palette and Nunito font are used throughout.</div></div>
-            <div class="golden-rule"><div class="golden-rule-num">2</div><div class="golden-rule-text"><strong>Seek Universal Usability</strong> — Color-coded status badges, readable font sizes, and clear labels ensure users of all skill levels can navigate effectively.</div></div>
-            <div class="golden-rule"><div class="golden-rule-num">3</div><div class="golden-rule-text"><strong>Offer Informative Feedback</strong> — Toast notifications confirm every action (add, delete, save). Status badges (EXPIRED, EXPIRING, IN-DATE) give immediate visual feedback.</div></div>
-            <div class="golden-rule"><div class="golden-rule-num">4</div><div class="golden-rule-text"><strong>Design Dialogs to Yield Closure</strong> — Add medicine modal has clear Cancel and Save Record actions. Success toast confirms completion.</div></div>
-            <div class="golden-rule"><div class="golden-rule-num">5</div><div class="golden-rule-text"><strong>Prevent Errors</strong> — Form validation highlights empty required fields. Delete confirmation dialogs prevent accidental data loss.</div></div>
-            <div class="golden-rule"><div class="golden-rule-num">6</div><div class="golden-rule-text"><strong>Permit Easy Reversal of Actions</strong> — Cancel buttons in all modals. Confirmation step before irreversible actions (delete, clear data).</div></div>
-            <div class="golden-rule"><div class="golden-rule-num">7</div><div class="golden-rule-text"><strong>Keep Users in Control</strong> — Sidebar navigation always visible. Tabs let users filter their view. Filter and search give full control over displayed data.</div></div>
-            <div class="golden-rule"><div class="golden-rule-num">8</div><div class="golden-rule-text"><strong>Reduce Short-Term Memory Load</strong> — Status shown directly on each item. Dashboard summaries reduce need to remember counts. Auto-fill in medicine name field reduces typing effort.</div></div>
+          <div class="golden-banner" onclick="toggleGoldenRules()">
+            <div class="golden-banner-title">🏆 Shneiderman's 8 Golden Rules <span id="gr-arrow">▼</span></div>
+            <div class="golden-rules-content" id="golden-rules-content">
+              <div class="golden-rule"><div class="golden-rule-num">1</div><div class="golden-rule-text"><strong>Strive for Consistency</strong> — Uniform button styles, colors, and typography across all pages.</div></div>
+              <div class="golden-rule"><div class="golden-rule-num">2</div><div class="golden-rule-text"><strong>Seek Universal Usability</strong> — Color-coded status, readable fonts, and clear labels for all skill levels.</div></div>
+              <div class="golden-rule"><div class="golden-rule-num">3</div><div class="golden-rule-text"><strong>Offer Informative Feedback</strong> — Toast notifications confirm every action. Status badges give visual feedback.</div></div>
+              <div class="golden-rule"><div class="golden-rule-num">4</div><div class="golden-rule-text"><strong>Design Dialogs to Yield Closure</strong> — Modals have clear Cancel and Save with success confirmation.</div></div>
+              <div class="golden-rule"><div class="golden-rule-num">5</div><div class="golden-rule-text"><strong>Prevent Errors</strong> — Form validation highlights empty required fields. Confirm before delete.</div></div>
+              <div class="golden-rule"><div class="golden-rule-num">6</div><div class="golden-rule-text"><strong>Permit Easy Reversal</strong> — Undo button in Activity Log restores deleted items.</div></div>
+              <div class="golden-rule"><div class="golden-rule-num">7</div><div class="golden-rule-text"><strong>Keep Users in Control</strong> — Sidebar navigation always accessible. Sort, filter, and search give full control.</div></div>
+              <div class="golden-rule"><div class="golden-rule-num">8</div><div class="golden-rule-text"><strong>Reduce Memory Load</strong> — Status shown on each card. Auto-suggestions in forms reduce typing effort.</div></div>
+            </div>
           </div>
         </div>
       </div>
@@ -1848,99 +939,64 @@
   </main>
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!--  ADD MEDICINE MODAL                         -->
-<!-- ═══════════════════════════════════════════ -->
-<div class="modal-overlay" id="add-modal-overlay">
-  <div class="modal" style="position:relative">
+<!-- ══════════════════════════════════════
+     ADD MEDICINE MODAL
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="add-modal-overlay" onclick="handleOverlayClick(event,'add-modal-overlay')">
+  <div class="modal" id="add-modal">
     <button class="modal-close" onclick="closeAddModal()">✕</button>
     <div class="modal-title">💊 Medicine Entry</div>
-
     <div class="form-group">
-      <label class="form-label">Item Name (Generic)</label>
+      <label class="form-label">Item Name (Generic) <span style="color:var(--red)">*</span></label>
       <input type="text" class="form-input" id="m-name" placeholder="e.g. Paracetamol, Ibuprofen..." list="med-suggestions" autocomplete="off">
       <datalist id="med-suggestions">
-        <option value="Paracetamol 500mg">
-        <option value="Ibuprofen 200mg">
-        <option value="Amoxicillin 250mg">
-        <option value="Ascorbic Acid 500mg">
-        <option value="Metformin 500mg">
-        <option value="Atorvastatin 10mg">
-        <option value="Loperamide">
-        <option value="Multivitamins">
-        <option value="Cetirizine 10mg">
-        <option value="Omeprazole 20mg">
-        <option value="Amlodipine 5mg">
-        <option value="Losartan 50mg">
+        <option value="Paracetamol 500mg"><option value="Ibuprofen 200mg"><option value="Amoxicillin 250mg">
+        <option value="Ascorbic Acid 500mg"><option value="Metformin 500mg"><option value="Atorvastatin 10mg">
+        <option value="Loperamide"><option value="Multivitamins"><option value="Cetirizine 10mg">
+        <option value="Omeprazole 20mg"><option value="Amlodipine 5mg"><option value="Losartan 50mg">
       </datalist>
     </div>
-
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label">Category</label>
-        <select class="form-select" id="m-cat">
-          <option value="">Select category...</option>
-          <option>Analgesics</option>
-          <option>Antibiotics</option>
-          <option>Antidiabetic</option>
-          <option>Gastrointestinal</option>
-          <option>Statin</option>
-          <option>Supplements</option>
-          <option>Cardiovascular</option>
-          <option>Antihistamine</option>
-          <option>Infant</option>
-          <option>Other</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Brand Name <span style="color:var(--text-light);font-weight:400">(optional)</span></label>
-        <input type="text" class="form-input" id="m-brand" placeholder="e.g. RiteMed, Biogesic...">
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Quantity</label>
+        <label class="form-label">Quantity <span style="color:var(--red)">*</span></label>
         <input type="number" class="form-input" id="m-qty" placeholder="e.g. 30" min="1">
       </div>
       <div class="form-group">
-        <label class="form-label">Unit</label>
+        <label class="form-label">Unit <span style="color:var(--red)">*</span></label>
         <select class="form-select" id="m-unit">
-          <option>Tablets</option>
-          <option>Capsules</option>
-          <option>Sachets</option>
-          <option>Bottle</option>
-          <option>Blister Packs</option>
-          <option>Vials</option>
-          <option>Pieces</option>
+          <option>Tablets</option><option>Capsules</option><option>Sachets</option>
+          <option>Bottle</option><option>Blister Packs</option><option>Vials</option><option>Pieces</option>
         </select>
       </div>
     </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Expiry Date</label>
-        <input type="date" class="form-input" id="m-expiry">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Dosage Form</label>
-        <select class="form-select" id="m-form">
-          <option>Tablet</option>
-          <option>Capsule</option>
-          <option>Syrup</option>
-          <option>Drops</option>
-          <option>Injection</option>
-          <option>Cream</option>
-          <option>Inhaler</option>
-          <option>Patch</option>
-        </select>
-      </div>
+    <div class="form-group">
+      <label class="form-label">Expiry Date <span style="color:var(--red)">*</span></label>
+      <input type="date" class="form-input" id="m-expiry">
     </div>
-
-    <button class="btn-upload" onclick="showToast('Select a file from your device (demo)', 'info')">
-      📎 Upload Photo / File (optional)
-    </button>
-
+    <div class="form-group">
+      <label class="form-label">Used For <span class="form-optional">(optional)</span></label>
+      <input type="text" class="form-input" id="m-usefor" placeholder="e.g. Headache, Fever..." autocomplete="off">
+      <div class="used-for-tags" id="usefor-tags">
+        <span class="uftag" onclick="toggleUseForTag(this)">Cough</span>
+        <span class="uftag" onclick="toggleUseForTag(this)">Headache</span>
+        <span class="uftag" onclick="toggleUseForTag(this)">Fever</span>
+        <span class="uftag" onclick="toggleUseForTag(this)">Stomach Pain</span>
+        <span class="uftag" onclick="toggleUseForTag(this)">Tummy Ache</span>
+        <span class="uftag" onclick="toggleUseForTag(this)">Diabetes</span>
+        <span class="uftag" onclick="toggleUseForTag(this)">High Blood Pressure</span>
+        <span class="uftag" onclick="toggleUseForTag(this)">Cholesterol</span>
+        <span class="uftag" onclick="toggleUseForTag(this)">Pain Relief</span>
+        <span class="uftag" onclick="toggleUseForTag(this)">Diarrhea</span>
+        <span class="uftag" onclick="toggleUseForTag(this)">Allergies</span>
+        <span class="uftag" onclick="toggleUseForTag(this)">Vitamins</span>
+        <span class="uftag" onclick="toggleUseForTag(this)">Antibiotics</span>
+        <span class="uftag" onclick="toggleUseForTag(this)">Inflammation</span>
+        <span class="uftag" onclick="toggleUseForTag(this)">Heart</span>
+        <span class="uftag" onclick="toggleUseForTag(this)">Asthma</span>
+      </div>
+      <div class="form-hint">Tap tags to select or type your own</div>
+    </div>
+    <button class="btn-upload" onclick="showToast('Select a file from your device (demo)','info')">📎 Upload Photo / File (optional)</button>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeAddModal()">Cancel</button>
       <button class="btn-save" onclick="saveMedicine()">Save Record</button>
@@ -1948,85 +1004,88 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!--  MEDICINE DETAIL MODAL                      -->
-<!-- ═══════════════════════════════════════════ -->
-<div class="modal-overlay" id="detail-modal-overlay">
-  <div class="modal" style="position:relative;max-width:560px">
-    <button class="modal-close" onclick="closeDetailModal()">✕</button>
-    <div class="detail-modal-header">
-      <div class="detail-med-icon" id="dm-icon">💊</div>
-      <div>
-        <div class="detail-med-name" id="dm-name"></div>
-        <div class="detail-badge-wrap">
-          <div class="detail-status" id="dm-status"></div>
-          <div class="detail-expiry-date" id="dm-expiry"></div>
-          <button class="btn-edit" onclick="openEditModal()">✏️ EDIT</button>
-        </div>
-      </div>
-    </div>
-    <div class="detail-desc" id="dm-desc"></div>
-    <div class="detail-grid">
-      <div class="detail-field"><div class="detail-field-label">Strength</div><div class="detail-field-value" id="dm-strength"></div></div>
-      <div class="detail-field"><div class="detail-field-label">Dosage Form</div><div class="detail-field-value" id="dm-form"></div></div>
-      <div class="detail-field"><div class="detail-field-label">Category</div><div class="detail-field-value" id="dm-cat"></div></div>
-      <div class="detail-field"><div class="detail-field-label">Brand Name</div><div class="detail-field-value" id="dm-brand"></div></div>
-      <div class="detail-field"><div class="detail-field-label">Stock Quantity</div><div class="detail-field-value" id="dm-qty"></div></div>
-      <div class="detail-field"><div class="detail-field-label">Unit of Measure</div><div class="detail-field-value" id="dm-unit"></div></div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel btn-danger" onclick="deleteMedFromDetail()">🗑️ Delete</button>
-      <button class="btn-save" onclick="closeDetailModal()">Done</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════ -->
-<!--  CONFIRM DELETE MODAL                       -->
-<!-- ═══════════════════════════════════════════ -->
-<div class="modal-overlay" id="confirm-modal-overlay">
-  <div class="modal confirm-modal" style="position:relative">
-    <button class="modal-close" onclick="closeConfirmModal()">✕</button>
-    <div class="confirm-icon">⚠️</div>
-    <div class="confirm-title" id="confirm-title">Delete Medicine?</div>
-    <div class="confirm-msg" id="confirm-msg">This action cannot be undone.</div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeConfirmModal()">Cancel</button>
-      <button class="btn-save btn-danger" id="confirm-action-btn">Delete</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════ -->
-<!--  ADD DOSE MODAL                             -->
-<!-- ═══════════════════════════════════════════ -->
-<div class="modal-overlay" id="dose-modal-overlay">
-  <div class="modal" style="position:relative;max-width:440px">
-    <button class="modal-close" onclick="document.getElementById('dose-modal-overlay').classList.remove('open')">✕</button>
-    <div class="modal-title">⏰ Add Dose Schedule</div>
+<!-- SHOPPING ADD ITEM MODAL -->
+<div class="modal-overlay" id="shop-add-modal-overlay" onclick="handleOverlayClick(event,'shop-add-modal-overlay')">
+  <div class="modal sm" id="shop-add-modal">
+    <button class="modal-close" onclick="document.getElementById('shop-add-modal-overlay').classList.remove('open')">✕</button>
+    <div class="modal-title">🛒 Add to Shopping List</div>
     <div class="form-group">
-      <label class="form-label">Medicine</label>
-      <select class="form-select" id="dose-med"></select>
+      <label class="form-label">Medicine Name <span style="color:var(--red)">*</span></label>
+      <input type="text" class="form-input" id="shop-name" placeholder="e.g. Paracetamol 500mg" list="med-suggestions">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes <span class="form-optional">(optional)</span></label>
+      <input type="text" class="form-input" id="shop-notes" placeholder="e.g. 20 tablets, any brand">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="document.getElementById('shop-add-modal-overlay').classList.remove('open')">Cancel</button>
+      <button class="btn-save" onclick="saveShopItem()">Add to List</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHOPPING → INVENTORY DETAILS MODAL -->
+<div class="modal-overlay" id="shop-inv-modal-overlay" onclick="handleOverlayClick(event,'shop-inv-modal-overlay')">
+  <div class="modal" id="shop-inv-modal">
+    <button class="modal-close" onclick="document.getElementById('shop-inv-modal-overlay').classList.remove('open')">✕</button>
+    <div class="modal-title" id="shop-inv-modal-title">📦 Add to Inventory</div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:18px">Fill in the details for this medicine before adding it to your inventory.</p>
+    <input type="hidden" id="shop-inv-item-idx">
+    <div class="form-group">
+      <label class="form-label">Item Name</label>
+      <input type="text" class="form-input" id="shop-inv-name" readonly style="opacity:.7">
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label">Time</label>
-        <input type="time" class="form-input" id="dose-time" value="08:00">
+        <label class="form-label">Quantity <span style="color:var(--red)">*</span></label>
+        <input type="number" class="form-input" id="shop-inv-qty" placeholder="e.g. 30" min="1">
       </div>
       <div class="form-group">
-        <label class="form-label">Dosage</label>
-        <input type="text" class="form-input" id="dose-amount" placeholder="e.g. 1 tablet">
+        <label class="form-label">Unit</label>
+        <select class="form-select" id="shop-inv-unit"><option>Tablets</option><option>Capsules</option><option>Sachets</option><option>Bottle</option><option>Blister Packs</option><option>Pieces</option></select>
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">Frequency</label>
-      <select class="form-select" id="dose-freq">
-        <option>Once daily</option>
-        <option>Twice daily</option>
-        <option>Three times daily</option>
-        <option>Every 8 hours</option>
-        <option>As needed</option>
-      </select>
+      <label class="form-label">Expiry Date <span style="color:var(--red)">*</span></label>
+      <input type="date" class="form-input" id="shop-inv-expiry">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Used For <span class="form-optional">(optional)</span></label>
+      <input type="text" class="form-input" id="shop-inv-usefor" placeholder="e.g. Fever, Pain">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="document.getElementById('shop-inv-modal-overlay').classList.remove('open')">Cancel</button>
+      <button class="btn-save" onclick="confirmShopToInventory()">Add to Inventory</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirm-modal-overlay" onclick="handleOverlayClick(event,'confirm-modal-overlay')">
+  <div class="modal confirm-modal">
+    <button class="modal-close" onclick="closeConfirmModal()">✕</button>
+    <div class="confirm-icon">⚠️</div>
+    <div class="confirm-title" id="confirm-title">Are you sure?</div>
+    <div class="confirm-msg" id="confirm-msg">This action cannot be undone.</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeConfirmModal()">Cancel</button>
+      <button class="btn-save" id="confirm-btn" style="background:var(--red)">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD DOSE MODAL -->
+<div class="modal-overlay" id="dose-modal-overlay" onclick="handleOverlayClick(event,'dose-modal-overlay')">
+  <div class="modal sm">
+    <button class="modal-close" onclick="document.getElementById('dose-modal-overlay').classList.remove('open')">✕</button>
+    <div class="modal-title">⏰ Add Dose Schedule</div>
+    <div class="form-group"><label class="form-label">Medicine</label><select class="form-select" id="dose-med"></select></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Time</label><input type="time" class="form-input" id="dose-time" value="08:00"></div>
+      <div class="form-group"><label class="form-label">Dosage</label><input type="text" class="form-input" id="dose-amount" placeholder="e.g. 1 tablet"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Frequency</label>
+      <select class="form-select" id="dose-freq"><option>Once daily</option><option>Twice daily</option><option>Three times daily</option><option>Every 8 hours</option><option>As needed</option></select>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="document.getElementById('dose-modal-overlay').classList.remove('open')">Cancel</button>
@@ -2035,33 +1094,35 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!--  TOAST CONTAINER                            -->
-<!-- ═══════════════════════════════════════════ -->
+<!-- TOAST -->
 <div class="toast-container" id="toast-container"></div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!--  JAVASCRIPT                                 -->
-<!-- ═══════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════ -->
 <script>
-// ─── STATE ────────────────────────────────────────
-let currentUser = { name: 'Juan', email: 'juandelacruz@gmail.com' };
+// ─── STATE ───────────────────────────────────────────────
+let currentUser = { name:'Juan', fullName:'Juan Dela Cruz', email:'juandelacruz@gmail.com', phone:'' };
 let currentFilter = 'all';
-let currentMedIndex = -1;
+let currentSort = 'default';
+let currentMedIdx = -1;
 let calYear = new Date().getFullYear();
 let calMonth = new Date().getMonth();
 let selectedDate = new Date();
-let pendingDeleteFn = null;
+let pendingConfirmFn = null;
+
+// History for undo
+let undoStack = [];
 
 let medicines = [
-  { name:'Paracetamol', strength:'500mg', form:'Capsule', cat:'Analgesics', brand:'RiteMed', qty:40, unit:'Blister Packs', expiry:'2030-08-15', desc:'Relief of mild to moderate pain and fever.' },
-  { name:'Paracetamol (Syrup)', strength:'100mL', form:'Syrup', cat:'Infant', brand:'Calpol', qty:2, unit:'Bottle', expiry:'2030-08-15', desc:'Paracetamol syrup for infants and children.' },
-  { name:'Amoxicillin 250mg', strength:'250mg', form:'Capsule', cat:'Antibiotics', brand:'Amoxil', qty:20, unit:'Tablets', expiry:'2026-01-25', desc:'Antibiotic for bacterial infections.' },
-  { name:'Loperamide', strength:'2mg', form:'Tablet', cat:'Gastrointestinal', brand:'Diatabs', qty:12, unit:'Tablets', expiry:'2025-08-02', desc:'Anti-diarrheal medication.' },
-  { name:'Atorvastatin 10mg', strength:'10mg', form:'Tablet', cat:'Statin', brand:'Lipitor', qty:25, unit:'Tablets', expiry:'2026-03-25', desc:'Used to lower cholesterol.' },
-  { name:'Metformin 500mg', strength:'500mg', form:'Tablet', cat:'Antidiabetic', brand:'Glucophage', qty:15, unit:'Tablets', expiry:'2026-03-18', desc:'For type 2 diabetes management.' },
-  { name:'Ascorbic Acid 500mg', strength:'500mg', form:'Tablet', cat:'Supplements', brand:'Watsons Generic', qty:15, unit:'Tablets', expiry:'2027-11-22', desc:'Vitamin C supplement.' },
-  { name:'Ibuprofen 200mg', strength:'200mg', form:'Tablet', cat:'Analgesics', brand:'Watsons Generic', qty:30, unit:'Tablets', expiry:'2030-03-23', desc:'Anti-inflammatory, pain relief.' },
+  { name:'Paracetamol', qty:40, unit:'Tablets', expiry:'2030-08-15', usedFor:'Fever, Pain' },
+  { name:'Paracetamol Syrup', qty:2, unit:'Bottle', expiry:'2030-08-15', usedFor:'Infant Fever' },
+  { name:'Amoxicillin 250mg', qty:20, unit:'Tablets', expiry:'2026-01-25', usedFor:'Antibiotics' },
+  { name:'Loperamide', qty:12, unit:'Tablets', expiry:'2025-08-02', usedFor:'Diarrhea' },
+  { name:'Atorvastatin 10mg', qty:25, unit:'Tablets', expiry:'2026-03-25', usedFor:'Cholesterol' },
+  { name:'Metformin 500mg', qty:15, unit:'Tablets', expiry:'2026-03-18', usedFor:'Diabetes' },
+  { name:'Ascorbic Acid 500mg', qty:15, unit:'Tablets', expiry:'2027-11-22', usedFor:'Vitamins' },
+  { name:'Ibuprofen 200mg', qty:30, unit:'Tablets', expiry:'2030-03-23', usedFor:'Inflammation, Pain Relief' },
 ];
 
 let doses = [
@@ -2071,602 +1132,543 @@ let doses = [
 ];
 
 let shoppingItems = [
-  { name:'Amoxicillin 250mg', qty:'20 tablets', priority:'urgent', done:false },
-  { name:'Loperamide (Diatabs)', qty:'12 tablets', priority:'urgent', done:false },
-  { name:'Paracetamol 500mg', qty:'40 tablets', priority:'normal', done:false },
-  { name:'Cetirizine 10mg', qty:'10 tablets', priority:'normal', done:true },
-];
-
-let treatmentPlans = [
-  { name:'Diabetes Management', meds:['Metformin 500mg'], progress:65, start:'01 Jan 2025', end:'31 Dec 2025', notes:'Monitor blood sugar daily' },
-  { name:'Cholesterol Control', meds:['Atorvastatin 10mg'], progress:40, start:'01 Mar 2025', end:'01 Mar 2026', notes:'Follow low-fat diet' },
-  { name:'Antibiotic Course', meds:['Amoxicillin 250mg'], progress:100, start:'10 Jan 2026', end:'17 Jan 2026', notes:'Complete full course' },
+  { name:'Amoxicillin 250mg', notes:'20 tablets', done:false },
+  { name:'Loperamide', notes:'12 tablets', done:false },
+  { name:'Cetirizine 10mg', notes:'For allergies', done:false },
 ];
 
 let activityLog = [
-  { type:'add', item:'Ibuprofen 200mg', date: fmtNow() },
-  { type:'add', item:'Ascorbic Acid 500mg', date: '15 Apr 2026, 10:20' },
-  { type:'delete', item:'Cough Syrup', date: '14 Apr 2026, 08:45' },
-  { type:'update', item:'Paracetamol', date: '12 Apr 2026, 14:30' },
+  { type:'add', item:'Ibuprofen 200mg', date:fmtNow(), snapshot:null },
+  { type:'add', item:'Ascorbic Acid 500mg', date:'15 Apr 2026, 10:20', snapshot:null },
 ];
 
-function fmtNow() {
-  const d = new Date();
-  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) + ', ' + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+const pharmacies = [
+  { name:'Mercury Drug', branch:'Taft Avenue Branch', address:'Taft Ave, Ermita, Manila', hours:'Open 24 Hours', open:true, dist:'0.4 km', phone:'(02) 8523-4567', brand:'Mercury Drug' },
+  { name:'Watsons', branch:'SM Manila Branch', address:'SM City Manila, Taft Ave, Manila', hours:'Open until 9:00 PM', open:true, dist:'0.7 km', phone:'(02) 8521-3456', brand:'Watsons' },
+  { name:'Rose Pharmacy', branch:'Roxas Blvd Branch', address:'Roxas Blvd, Malate, Manila', hours:'Open until 10:00 PM', open:true, dist:'1.1 km', phone:'(02) 8525-7890', brand:'Rose Pharmacy' },
+  { name:'Generika Drugstore', branch:'Quiapo Branch', address:'Quezon Blvd, Quiapo, Manila', hours:'Open until 8:00 PM', open:true, dist:'1.4 km', phone:'(02) 8733-1234', brand:'Generika' },
+  { name:'Southstar Drug', branch:'Binondo Branch', address:'Ongpin St, Binondo, Manila', hours:'Closed (Opens 8:00 AM)', open:false, dist:'1.8 km', phone:'(02) 8241-5678', brand:'Southstar' },
+  { name:'Mercury Drug', branch:'Intramuros Branch', address:'P. Burgos St, Intramuros, Manila', hours:'Open until 9:00 PM', open:true, dist:'2.1 km', phone:'(02) 8527-9012', brand:'Mercury Drug' },
+];
+
+// ─── HELPERS ─────────────────────────────────────────────
+function fmtNow(){
+  const d=new Date();
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+', '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
 }
-
-// ─── AUTH ──────────────────────────────────────
-function doLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const pass  = document.getElementById('login-password').value.trim();
-  let valid = true;
-
-  document.getElementById('email-error').style.display = 'none';
-  document.getElementById('pass-error').style.display = 'none';
-  document.getElementById('login-email').classList.remove('input-error');
-  document.getElementById('login-password').classList.remove('input-error');
-
-  if (!email) {
-    document.getElementById('email-error').style.display = 'block';
-    document.getElementById('login-email').classList.add('input-error');
-    valid = false;
-  }
-  if (!pass) {
-    document.getElementById('pass-error').style.display = 'block';
-    document.getElementById('login-password').classList.add('input-error');
-    valid = false;
-  }
-  if (!valid) return;
-
-  // Parse name from email
-  const namePart = email.split('@')[0].replace(/[^a-z]/gi,' ');
-  const firstName = namePart.charAt(0).toUpperCase() + namePart.slice(1).split(' ')[0];
-  currentUser.name = firstName;
-  currentUser.email = email;
-  enterApp();
-}
-
-function guestLogin() {
-  currentUser = { name: 'Guest', email: 'guest@medtracker.com' };
-  enterApp();
-}
-
-function enterApp() {
-  document.getElementById('login-view').classList.remove('active');
-  document.getElementById('app-view').classList.add('active');
-  document.getElementById('greeting-name').textContent = currentUser.name;
-  document.getElementById('profile-name-disp').textContent = currentUser.name;
-  document.getElementById('profile-email-disp').textContent = currentUser.email;
-  document.getElementById('prof-name').textContent = currentUser.name;
-  document.getElementById('prof-email').textContent = currentUser.email;
-  document.getElementById('profile-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
-  updateStats();
-  renderMedList();
-  renderCabinet();
-  renderCalendar();
-  renderDoseList();
-  renderExpiryWatch();
-  renderTreatmentPlans();
-  renderShoppingList();
-  renderActivityLog();
-}
-
-function doLogout() {
-  document.getElementById('app-view').classList.remove('active');
-  document.getElementById('login-view').classList.add('active');
-  document.getElementById('login-email').value = '';
-  document.getElementById('login-password').value = '';
-  navTo('home', document.querySelector('[data-page="home"]'));
-  showToast('Logged out successfully', 'info');
-}
-
-// ─── NAVIGATION ────────────────────────────────
-function navTo(page, el) {
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  if (el) el.classList.add('active');
-  document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-
-  const titles = { home:'Dashboard', cabinet:"Medicine Cabinet", schedule:"Schedule",
-    expiry:"Expiry Watch", treatment:"Treatment Plans", shopping:"Shopping List",
-    activity:"Activity Log", profile:"Profile", settings:"Settings", about:"About" };
-  document.getElementById('topbar-title').textContent = titles[page] || page;
-
-  closeSidebar();
-}
-
-function toggleSidebar() {
-  const s = document.getElementById('sidebar');
-  const o = document.getElementById('sidebar-overlay');
-  if (window.innerWidth <= 900) {
-    s.classList.toggle('mobile-open');
-    o.classList.toggle('open');
-  } else {
-    s.classList.toggle('hidden');
-  }
-}
-
-function closeSidebar() {
-  if (window.innerWidth <= 900) {
-    document.getElementById('sidebar').classList.remove('mobile-open');
-    document.getElementById('sidebar-overlay').classList.remove('open');
-  }
-}
-
-// ─── STATUS UTILS ──────────────────────────────
-function getStatus(expiryStr) {
-  const exp = new Date(expiryStr);
-  const now = new Date();
-  const diffDays = Math.ceil((exp - now) / (1000*60*60*24));
-  if (diffDays < 0) return 'expired';
-  if (diffDays <= 30) return 'expiring';
-  return 'indate';
-}
-
-function getDaysLeft(expiryStr) {
-  const exp = new Date(expiryStr);
-  const now = new Date();
-  return Math.ceil((exp - now) / (1000*60*60*24));
-}
-
-function fmtDate(dateStr) {
-  const d = new Date(dateStr);
+function fmtDate(s){
+  if(!s)return '—';
+  const d=new Date(s);
   return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}).replace(/ /g,'-');
 }
+function getStatus(e){
+  const diff=Math.ceil((new Date(e)-new Date())/(86400000));
+  return diff<0?'expired':diff<=30?'expiring':'indate';
+}
+function getDays(e){return Math.ceil((new Date(e)-new Date())/(86400000))}
+function deepClone(arr){return JSON.parse(JSON.stringify(arr))}
 
-function updateStats() {
-  const total = medicines.length;
-  const exp = medicines.filter(m => ['expired','expiring'].includes(getStatus(m.expiry))).length;
-  const safe = medicines.filter(m => getStatus(m.expiry) === 'indate').length;
-  document.getElementById('count-total').textContent = total;
-  document.getElementById('count-expiring').textContent = exp;
-  document.getElementById('count-safe').textContent = safe;
+// ─── AUTH ─────────────────────────────────────────────────
+function togglePw(){
+  const inp=document.getElementById('login-password');
+  const ec=document.getElementById('eye-closed');
+  const eo=document.getElementById('eye-open');
+  if(inp.type==='password'){inp.type='text';ec.style.display='none';eo.style.display=''}
+  else{inp.type='password';ec.style.display='';eo.style.display='none'}
+}
+function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-password').value.trim();
+  let ok=true;
+  document.getElementById('email-error').style.display='none';
+  document.getElementById('pass-error').style.display='none';
+  document.getElementById('login-email').classList.remove('input-error');
+  document.getElementById('login-password').classList.remove('input-error');
+  if(!email){document.getElementById('email-error').style.display='block';document.getElementById('login-email').classList.add('input-error');ok=false}
+  if(!pass){document.getElementById('pass-error').style.display='block';document.getElementById('login-password').classList.add('input-error');ok=false}
+  if(!ok)return;
+  const firstName=email.split('@')[0].replace(/[^a-zA-Z]/g,' ').trim().split(' ')[0];
+  currentUser.name=firstName.charAt(0).toUpperCase()+firstName.slice(1);
+  currentUser.fullName=currentUser.name;
+  currentUser.email=email;
+  enterApp();
+}
+function guestLogin(){currentUser={name:'Guest',fullName:'Guest User',email:'guest@medtracker.com',phone:''};enterApp()}
+function enterApp(){
+  document.getElementById('login-view').classList.remove('active');
+  document.getElementById('app-view').classList.add('active');
+  refreshUserUI();
+  updateStats();renderMedCards();renderCalendar();renderDoseList();
+  renderExpiryWatch();renderShoppingList();renderActivityLog();renderPharmacies();
+}
+function doLogout(){
+  document.getElementById('app-view').classList.remove('active');
+  document.getElementById('login-view').classList.add('active');
+  navTo('home',document.querySelector('[data-page="home"]'));
+  showToast('Logged out successfully','info');
+}
+function refreshUserUI(){
+  document.getElementById('greeting-name').textContent=currentUser.name;
+  document.getElementById('profile-name-hero').textContent=currentUser.fullName;
+  document.getElementById('profile-email-hero').textContent=currentUser.email;
+  document.getElementById('profile-avatar-disp').textContent=currentUser.fullName.charAt(0).toUpperCase();
+  document.getElementById('edit-fullname').value=currentUser.fullName;
+  document.getElementById('edit-email').value=currentUser.email;
+  document.getElementById('edit-phone').value=currentUser.phone||'';
 }
 
-// ─── FILTER TABS ───────────────────────────────
-function filterView(filter, card) {
-  currentFilter = filter;
-  document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-tab'));
-  card.classList.add('active-tab');
-  const labels = { all:'EVERYTHING IN INVENTORY', expiring:'EXPIRING / EXPIRED ITEMS', safe:'SAFE TO USE ITEMS' };
-  document.getElementById('inv-section-title').textContent = labels[filter];
-  renderMedList();
+// ─── PROFILE EDIT ────────────────────────────────────────
+function saveFullName(){
+  const v=document.getElementById('edit-fullname').value.trim();
+  if(!v){showToast('Name cannot be empty','error');return}
+  currentUser.fullName=v;
+  currentUser.name=v.split(' ')[0];
+  refreshUserUI();
+  showToast('✅ Name updated!');
+}
+function saveEmail(){
+  const v=document.getElementById('edit-email').value.trim();
+  if(!v){showToast('Email cannot be empty','error');return}
+  currentUser.email=v;
+  refreshUserUI();
+  showToast('✅ Email updated!');
+}
+function savePhone(){
+  const v=document.getElementById('edit-phone').value.trim();
+  currentUser.phone=v;
+  showToast('✅ Phone number saved!');
 }
 
-// ─── RENDER MEDICINE LIST ──────────────────────
-function renderMedList() {
-  const search = (document.getElementById('med-search').value || '').toLowerCase();
-  const fExp = document.getElementById('f-expiring').checked;
-  const fIn  = document.getElementById('f-indate').checked;
-  const fExp2 = document.getElementById('f-expired').checked;
-  const checkedCats = [...document.querySelectorAll('[data-cat]')].filter(c => c.checked).map(c => c.dataset.cat);
+// ─── NAVIGATION ──────────────────────────────────────────
+function navTo(page,el){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.querySelectorAll('.page-section').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  const titles={home:'Dashboard',schedule:'Schedule',expiry:'Expiry Watch',shopping:'Shopping List',activity:'Activity Log',pharmacies:'Nearby Pharmacies',profile:'Profile',settings:'Settings',about:'About'};
+  document.getElementById('topbar-title').textContent=titles[page]||page;
+  closeSidebar();
+}
+function toggleSidebar(){
+  const s=document.getElementById('sidebar');
+  const m=document.getElementById('main-content');
+  const o=document.getElementById('sidebar-overlay');
+  if(window.innerWidth<=900){s.style.transform=s.style.transform===''||s.style.transform==='translateX(-260px)'?'translateX(0)':'translateX(-260px)';o.classList.toggle('open')}
+  else{s.classList.toggle('hidden');m.classList.toggle('full-width')}
+}
+function closeSidebar(){if(window.innerWidth<=900){document.getElementById('sidebar').style.transform='';document.getElementById('sidebar-overlay').classList.remove('open')}}
 
-  let filtered = medicines.filter((m,i) => {
-    const st = getStatus(m.expiry);
-    if (currentFilter === 'expiring' && st === 'indate') return false;
-    if (currentFilter === 'safe' && st !== 'indate') return false;
-    if (!fExp && st === 'expiring') return false;
-    if (!fIn  && st === 'indate') return false;
-    if (!fExp2 && st === 'expired') return false;
-    if (!checkedCats.includes(m.cat)) return false;
-    if (search) {
-      const haystack = (m.name + ' ' + m.cat + ' ' + m.desc + ' ' + m.brand).toLowerCase();
-      if (!haystack.includes(search)) return false;
-    }
+// ─── STATS ───────────────────────────────────────────────
+function updateStats(){
+  document.getElementById('count-total').textContent=medicines.length;
+  document.getElementById('count-expiring').textContent=medicines.filter(m=>['expired','expiring'].includes(getStatus(m.expiry))).length;
+  document.getElementById('count-safe').textContent=medicines.filter(m=>getStatus(m.expiry)==='indate').length;
+}
+
+// ─── FILTER & SORT ───────────────────────────────────────
+function filterView(f,el){
+  currentFilter=f;
+  document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('active-tab'));
+  el.classList.add('active-tab');
+  const labels={all:'EVERYTHING IN INVENTORY',expiring:'EXPIRING / EXPIRED ITEMS',safe:'SAFE TO USE ITEMS'};
+  document.getElementById('inv-section-title').textContent=labels[f];
+  renderMedCards();
+}
+function setSort(s,el){
+  currentSort=s;
+  document.querySelectorAll('.sort-opt').forEach(o=>o.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('sort-dropdown').classList.remove('open');
+  renderMedCards();
+}
+function toggleSort(){document.getElementById('sort-dropdown').classList.toggle('open');document.getElementById('filter-dropdown').classList.remove('open')}
+function toggleFilter(){document.getElementById('filter-dropdown').classList.toggle('open');document.getElementById('sort-dropdown').classList.remove('open')}
+
+// ─── RENDER MED CARDS ────────────────────────────────────
+function renderMedCards(){
+  const search=(document.getElementById('med-search').value||'').toLowerCase();
+  const fExp=document.getElementById('f-expiring').checked;
+  const fIn=document.getElementById('f-indate').checked;
+  const fExpired=document.getElementById('f-expired').checked;
+
+  let list=medicines.filter(m=>{
+    const st=getStatus(m.expiry);
+    if(currentFilter==='expiring'&&st==='indate')return false;
+    if(currentFilter==='safe'&&st!=='indate')return false;
+    if(!fExp&&st==='expiring')return false;
+    if(!fIn&&st==='indate')return false;
+    if(!fExpired&&st==='expired')return false;
+    if(search){const h=(m.name+' '+(m.usedFor||'')).toLowerCase();if(!h.includes(search))return false}
     return true;
   });
 
-  const body = document.getElementById('med-table-body');
-  if (filtered.length === 0) {
-    body.innerHTML = `<div class="empty-state"><div class="empty-icon">💊</div><h3>No medicines found</h3><p>Add a new medicine or adjust your filters.</p></div>`;
-    return;
-  }
+  // Sort
+  if(currentSort==='expiry-asc')list.sort((a,b)=>new Date(a.expiry)-new Date(b.expiry));
+  else if(currentSort==='expiry-desc')list.sort((a,b)=>new Date(b.expiry)-new Date(a.expiry));
+  else if(currentSort==='name-asc')list.sort((a,b)=>a.name.localeCompare(b.name));
+  else if(currentSort==='name-desc')list.sort((a,b)=>b.name.localeCompare(a.name));
+  else if(currentSort==='qty-asc')list.sort((a,b)=>a.qty-b.qty);
+  else if(currentSort==='qty-desc')list.sort((a,b)=>b.qty-a.qty);
 
-  body.innerHTML = filtered.map(m => {
-    const st = getStatus(m.expiry);
-    const idx = medicines.indexOf(m);
-    const rowClass = st === 'expired' ? 'expired-row' : st === 'expiring' ? 'expiring-row' : 'indate-row';
-    const expClass = st;
-    const badge = `<span class="status-badge ${st}">${st === 'indate' ? 'IN-DATE' : st.toUpperCase()}</span>`;
-    return `<div class="med-row ${rowClass}" onclick="openDetailModal(${idx})">
-      <div class="med-name">${m.name}</div>
-      <div class="med-cat">${m.cat}</div>
-      <div class="med-qty">${m.qty}</div>
-      <div class="med-expiry ${expClass}">${fmtDate(m.expiry)}</div>
-      ${badge}
-    </div>`;
-  }).join('');
-}
+  const wrap=document.getElementById('med-cards-wrap');
+  if(!list.length){wrap.innerHTML=`<div class="empty-state" style="grid-column:span 2"><div class="empty-icon">💊</div><h3>No medicines found</h3><p>Add a new medicine or adjust your filters.</p></div>`;return}
 
-// ─── MEDICINE CABINET ──────────────────────────
-function renderCabinet() {
-  const expired = medicines.filter(m => getStatus(m.expiry) === 'expired').length;
-  const indate  = medicines.filter(m => getStatus(m.expiry) === 'indate').length;
-  const total   = medicines.length;
-
-  document.getElementById('cabinet-stats').innerHTML = `
-    <span class="cabinet-stat expired-tag" onclick="filterCabinet('expired')">▼ ${expired} Expired</span>
-    <span class="cabinet-stat indate-tag"  onclick="filterCabinet('indate')">▲ ${indate} In-Date</span>
-    <span class="cabinet-stat total-tag"   onclick="filterCabinet('all')">= ${total} Total</span>`;
-
-  renderCabinetBody('all');
-}
-
-let cabinetFilter = 'all';
-function filterCabinet(f) { cabinetFilter = f; renderCabinetBody(f); }
-
-function renderCabinetBody(f) {
-  const meds = f === 'all' ? medicines : medicines.filter(m => getStatus(m.expiry) === f);
-  const body = document.getElementById('cabinet-body');
-  if (!meds.length) {
-    body.innerHTML = `<div class="empty-state"><div class="empty-icon">🗄️</div><h3>No items</h3></div>`;
-    return;
-  }
-  body.innerHTML = meds.map((m,ri) => {
-    const idx = medicines.indexOf(m);
-    const st = getStatus(m.expiry);
-    const rowClass = st === 'expired' ? 'expired-row' : st === 'expiring' ? 'expiring-row' : 'indate-row';
-    const expClass = st;
-    return `<div class="med-row ${rowClass}" style="grid-template-columns:2.5fr 1.5fr 1.5fr 1.2fr" onclick="openDetailModal(${idx})">
-      <div>
-        <div class="med-name">${m.name}</div>
-        <span class="brand-badge">${m.brand}</span>
+  wrap.innerHTML=list.map(m=>{
+    const idx=medicines.indexOf(m);
+    const st=getStatus(m.expiry);
+    const days=getDays(m.expiry);
+    const daysClass=days<0?'red':days<=30?'orange':'green';
+    const daysLabel=days<0?`${Math.abs(days)}D OVERDUE`:days<=30?`${days}D LEFT`:days<365?`${Math.round(days/30)}MO LEFT`:`${(days/365).toFixed(1)}YR LEFT`;
+    return`<div class="med-card" onclick="openMedDetail(${idx})">
+      <div class="med-card-icon"><svg width="22" height="22" fill="white" opacity=".9" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg></div>
+      <div class="med-card-info">
+        <div class="med-card-name">${m.name}</div>
+        <div class="med-card-use">${m.usedFor||'—'}</div>
       </div>
-      <div class="med-cat">${m.cat}</div>
-      <div class="med-expiry ${expClass}">${fmtDate(m.expiry)}</div>
-      <span class="status-badge ${st}">${st === 'indate' ? 'IN-DATE' : st.toUpperCase()}</span>
+      <div class="med-card-right">
+        <div class="med-card-qty">${m.qty} <span>${m.unit}</span></div>
+        <div class="med-card-days ${daysClass}">${daysLabel}</div>
+      </div>
+      <div class="med-card-trash" onclick="event.stopPropagation();deleteMed(${idx})" title="Remove medicine">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3,6 5,6 21,6"/><path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2"/></svg>
+      </div>
     </div>`;
   }).join('');
 }
 
-// ─── MODALS ────────────────────────────────────
-function openAddModal() {
-  document.getElementById('add-modal-overlay').classList.add('open');
-  document.getElementById('m-name').value = '';
-  document.getElementById('m-cat').value = '';
-  document.getElementById('m-brand').value = '';
-  document.getElementById('m-qty').value = '';
-  document.getElementById('m-expiry').value = '';
-  [document.getElementById('m-name'),document.getElementById('m-cat'),
-   document.getElementById('m-qty'),document.getElementById('m-expiry')].forEach(e => e.classList.remove('error'));
-}
-
-function closeAddModal() {
-  document.getElementById('add-modal-overlay').classList.remove('open');
-}
-
-function saveMedicine() {
-  const name = document.getElementById('m-name').value.trim();
-  const cat  = document.getElementById('m-cat').value;
-  const qty  = document.getElementById('m-qty').value;
-  const exp  = document.getElementById('m-expiry').value;
-
-  let valid = true;
-  [['m-name',name],['m-cat',cat],['m-qty',qty],['m-expiry',exp]].forEach(([id,val]) => {
-    const el = document.getElementById(id);
-    if (!val) { el.classList.add('error'); valid = false; }
-    else { el.classList.remove('error'); }
-  });
-  if (!valid) { showToast('Please fill in all required fields.', 'error'); return; }
-
-  const newMed = {
-    name, strength: '', form: document.getElementById('m-form').value,
-    cat, brand: document.getElementById('m-brand').value || '—',
-    qty: parseInt(qty), unit: document.getElementById('m-unit').value,
-    expiry: exp, desc: `${cat} medication.`
-  };
-
-  medicines.unshift(newMed);
-  activityLog.unshift({ type:'add', item:name, date:fmtNow() });
-
-  closeAddModal();
-  updateStats();
-  renderMedList();
-  renderCabinet();
-  renderExpiryWatch();
-  renderShoppingList();
-  renderActivityLog();
-  showToast('✅ New Item added successfully!');
-}
-
-function openDetailModal(idx) {
-  currentMedIndex = idx;
-  const m = medicines[idx];
-  const st = getStatus(m.expiry);
-
-  document.getElementById('dm-name').textContent = m.name;
-  document.getElementById('dm-icon').textContent = m.form === 'Syrup' ? '🍶' : m.cat === 'Supplements' ? '💛' : '💊';
-  document.getElementById('dm-status').textContent = st === 'indate' ? 'IN-DATE' : st.toUpperCase();
-  document.getElementById('dm-status').className = 'detail-status ' + st;
-  document.getElementById('dm-expiry').textContent = fmtDate(m.expiry);
-  document.getElementById('dm-expiry').className = 'detail-expiry-date ' + st;
-  document.getElementById('dm-desc').textContent = '• ' + m.desc;
-  document.getElementById('dm-strength').textContent = m.strength || '—';
-  document.getElementById('dm-form').textContent = m.form;
-  document.getElementById('dm-cat').textContent = m.cat;
-  document.getElementById('dm-brand').textContent = m.brand;
-  document.getElementById('dm-qty').textContent = m.qty;
-  document.getElementById('dm-unit').textContent = m.unit;
-
-  document.getElementById('detail-modal-overlay').classList.add('open');
-}
-
-function closeDetailModal() {
-  document.getElementById('detail-modal-overlay').classList.remove('open');
-}
-
-function openEditModal() {
-  closeDetailModal();
+// ─── MED DETAIL ──────────────────────────────────────────
+function openMedDetail(idx){
+  currentMedIdx=idx;
+  const m=medicines[idx];
+  const st=getStatus(m.expiry);
+  const days=getDays(m.expiry);
+  const daysClass=days<0?'red':days<=30?'orange':'green';
+  const daysLabel=days<0?`Expired ${Math.abs(days)} days ago`:days<=30?`Expires in ${days} days`:`Expires in ${Math.round(days/30)} months`;
+  // reuse add modal prefilled
   openAddModal();
-  const m = medicines[currentMedIndex];
-  document.getElementById('m-name').value = m.name;
-  document.getElementById('m-cat').value = m.cat;
-  document.getElementById('m-brand').value = m.brand;
-  document.getElementById('m-qty').value = m.qty;
-  document.getElementById('m-expiry').value = m.expiry;
-  showToast('Editing: ' + m.name, 'info');
+  document.getElementById('m-name').value=m.name;
+  document.getElementById('m-qty').value=m.qty;
+  document.getElementById('m-unit').value=m.unit;
+  document.getElementById('m-expiry').value=m.expiry;
+  document.getElementById('m-usefor').value=m.usedFor||'';
+  document.querySelector('.modal-title').textContent='✏️ Edit Medicine';
+  document.querySelector('#add-modal .btn-save').onclick=updateMedicine;
+}
+function updateMedicine(){
+  const name=document.getElementById('m-name').value.trim();
+  const qty=document.getElementById('m-qty').value;
+  const exp=document.getElementById('m-expiry').value;
+  if(!name||!qty||!exp){showToast('Please fill in required fields','error');return}
+  const snap=deepClone(medicines);
+  medicines[currentMedIdx]={...medicines[currentMedIdx],name,qty:parseInt(qty),unit:document.getElementById('m-unit').value,expiry:exp,usedFor:document.getElementById('m-usefor').value};
+  pushUndo('update',medicines[currentMedIdx].name,snap);
+  closeAddModal();
+  updateStats();renderMedCards();renderExpiryWatch();renderShoppingList();
+  showToast('✅ Medicine updated!');
 }
 
-function deleteMedFromDetail() {
-  const m = medicines[currentMedIndex];
-  closeDetailModal();
-  const idx = currentMedIndex;
-  document.getElementById('confirm-title').textContent = 'Delete ' + m.name + '?';
-  document.getElementById('confirm-msg').textContent = 'This will permanently remove it from your inventory.';
-  pendingDeleteFn = () => {
-    activityLog.unshift({ type:'delete', item:m.name, date:fmtNow() });
-    medicines.splice(idx, 1);
+// ─── ADD MEDICINE ─────────────────────────────────────────
+function openAddModal(){
+  currentMedIdx=-1;
+  document.getElementById('add-modal-overlay').classList.add('open');
+  document.getElementById('m-name').value='';document.getElementById('m-qty').value='';
+  document.getElementById('m-expiry').value='';document.getElementById('m-usefor').value='';
+  document.querySelectorAll('.uftag').forEach(t=>t.classList.remove('selected'));
+  document.querySelector('.modal-title').textContent='💊 Medicine Entry';
+  document.querySelector('#add-modal .btn-save').onclick=saveMedicine;
+  [document.getElementById('m-name'),document.getElementById('m-qty'),document.getElementById('m-expiry')].forEach(e=>e.classList.remove('error'));
+}
+function closeAddModal(){document.getElementById('add-modal-overlay').classList.remove('open')}
+function toggleUseForTag(el){
+  el.classList.toggle('selected');
+  const sel=[...document.querySelectorAll('.uftag.selected')].map(t=>t.textContent);
+  document.getElementById('m-usefor').value=sel.join(', ');
+}
+function saveMedicine(){
+  const name=document.getElementById('m-name').value.trim();
+  const qty=document.getElementById('m-qty').value;
+  const exp=document.getElementById('m-expiry').value;
+  let ok=true;
+  [['m-name',name],['m-qty',qty],['m-expiry',exp]].forEach(([id,v])=>{const el=document.getElementById(id);if(!v){el.classList.add('error');ok=false}else el.classList.remove('error')});
+  if(!ok){showToast('Please fill in all required fields.','error');return}
+  const snap=deepClone(medicines);
+  const newMed={name,qty:parseInt(qty),unit:document.getElementById('m-unit').value,expiry:exp,usedFor:document.getElementById('m-usefor').value||'General'};
+  medicines.unshift(newMed);
+  pushUndo('add',name,snap);
+  closeAddModal();
+  updateStats();renderMedCards();renderExpiryWatch();renderShoppingList();renderActivityLog();
+  showToast('✅ New item added successfully!');
+}
+
+// ─── DELETE MED ───────────────────────────────────────────
+function deleteMed(idx){
+  const m=medicines[idx];
+  pendingConfirmFn=()=>{
+    const snap=deepClone(medicines);
+    medicines.splice(idx,1);
+    pushUndo('delete',m.name,snap);
     closeConfirmModal();
-    updateStats(); renderMedList(); renderCabinet();
-    renderExpiryWatch(); renderShoppingList(); renderActivityLog();
-    showToast('Medicine deleted.');
+    updateStats();renderMedCards();renderExpiryWatch();renderShoppingList();renderActivityLog();
+    showToast('Medicine removed.');
   };
-  document.getElementById('confirm-action-btn').onclick = pendingDeleteFn;
+  document.getElementById('confirm-title').textContent='Delete '+m.name+'?';
+  document.getElementById('confirm-msg').textContent='This will permanently remove it from your inventory.';
+  document.getElementById('confirm-btn').textContent='Delete';
+  document.getElementById('confirm-btn').onclick=pendingConfirmFn;
+  document.getElementById('confirm-modal-overlay').classList.add('open');
+}
+function closeConfirmModal(){document.getElementById('confirm-modal-overlay').classList.remove('open')}
+function confirmClearData(){
+  pendingConfirmFn=()=>{
+    const snap=deepClone(medicines);
+    medicines=[];shoppingItems=[];doses=[];activityLog=[];
+    pushUndo('clear','All Data',snap);
+    closeConfirmModal();
+    updateStats();renderMedCards();renderExpiryWatch();renderShoppingList();renderActivityLog();renderDoseList();
+    showToast('All data cleared.','error');
+  };
+  document.getElementById('confirm-title').textContent='Clear All Data?';
+  document.getElementById('confirm-msg').textContent='This removes ALL medicines, schedule, and shopping list. Cannot be undone.';
+  document.getElementById('confirm-btn').textContent='Clear All';
+  document.getElementById('confirm-btn').onclick=pendingConfirmFn;
   document.getElementById('confirm-modal-overlay').classList.add('open');
 }
 
-function closeConfirmModal() {
-  document.getElementById('confirm-modal-overlay').classList.remove('open');
-  pendingDeleteFn = null;
+// ─── UNDO ─────────────────────────────────────────────────
+function pushUndo(type,item,snap){
+  activityLog.unshift({type,item,date:fmtNow(),snapshot:snap});
+  if(activityLog.length>50)activityLog.pop();
+  renderActivityLog();
+}
+function undoAction(logIdx){
+  const entry=activityLog[logIdx];
+  if(!entry||!entry.snapshot){showToast('Cannot undo this action.','warn');return}
+  medicines=deepClone(entry.snapshot);
+  activityLog.splice(logIdx,1);
+  updateStats();renderMedCards();renderExpiryWatch();renderShoppingList();renderActivityLog();
+  showToast('↩️ Action undone!','info');
 }
 
-function confirmClearData() {
-  document.getElementById('confirm-title').textContent = 'Clear All Data?';
-  document.getElementById('confirm-msg').textContent = 'All medicines and logs will be permanently deleted. This cannot be undone.';
-  pendingDeleteFn = () => {
-    medicines = []; activityLog = [];
-    closeConfirmModal();
-    updateStats(); renderMedList(); renderCabinet();
-    renderExpiryWatch(); renderShoppingList(); renderActivityLog();
-    showToast('All data cleared.', 'error');
-  };
-  document.getElementById('confirm-action-btn').onclick = pendingDeleteFn;
-  document.getElementById('confirm-modal-overlay').classList.add('open');
-}
-
-// ─── EXPIRY WATCH ──────────────────────────────
-function renderExpiryWatch() {
-  const sorted = [...medicines].sort((a,b) => new Date(a.expiry) - new Date(b.expiry));
-  const container = document.getElementById('expiry-watch-list');
-  if (!sorted.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-icon">⏰</div><h3>No medicines to watch</h3></div>`;
-    return;
-  }
-  container.innerHTML = sorted.map((m,i) => {
-    const days = getDaysLeft(m.expiry);
-    const st = getStatus(m.expiry);
-    const colorClass = days < 0 ? 'red' : days <= 30 ? 'orange' : 'green';
-    const daysLabel = days < 0 ? `${Math.abs(days)}d OVERDUE` : days <= 30 ? `${days}d LEFT` : `${Math.round(days/30)}mo left`;
-    return `<div class="expiry-item">
-      <div class="expiry-urgency ${colorClass}"></div>
-      <div>
-        <div style="font-weight:800;font-size:16px;color:var(--text)">${m.name}</div>
-        <div style="font-size:13px;color:var(--text-muted)">${m.cat} · ${m.qty} ${m.unit} · Expires ${fmtDate(m.expiry)}</div>
-      </div>
-      <div class="expiry-days-badge ${colorClass === 'green' ? 'green' : colorClass}">${daysLabel}</div>
-    </div>`;
+// ─── EXPIRY WATCH ─────────────────────────────────────────
+function renderExpiryWatch(){
+  const sorted=[...medicines].sort((a,b)=>new Date(a.expiry)-new Date(b.expiry));
+  const c=document.getElementById('expiry-watch-list');
+  if(!sorted.length){c.innerHTML=`<div class="empty-state"><div class="empty-icon">⏰</div><h3>No medicines to watch</h3></div>`;return}
+  c.innerHTML=sorted.map(m=>{
+    const days=getDays(m.expiry);
+    const cc=days<0?'red':days<=30?'orange':'green';
+    const lbl=days<0?`${Math.abs(days)}d OVERDUE`:days<=30?`${days}d LEFT`:days<365?`${Math.round(days/30)}mo left`:`${(days/365).toFixed(1)}yr left`;
+    return`<div class="expiry-item"><div class="exp-bar ${cc}"></div>
+      <div><div style="font-weight:800;font-size:15px;color:var(--text)">${m.name}</div>
+      <div style="font-size:12px;color:var(--text-muted)">${m.usedFor||'General'} · ${m.qty} ${m.unit} · Expires ${fmtDate(m.expiry)}</div></div>
+      <div class="expiry-days-badge ${cc}">${lbl}</div></div>`;
   }).join('');
 }
 
-// ─── TREATMENT PLANS ───────────────────────────
-function renderTreatmentPlans() {
-  const c = document.getElementById('treatment-list');
-  c.innerHTML = treatmentPlans.map((t,i) => `
-    <div class="treatment-card">
-      <div class="treatment-header">
-        <div>
-          <div class="treatment-name">${t.name}</div>
-          <div style="font-size:13px;color:var(--text-muted)">${t.start} → ${t.end}</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;color:var(--blue)">${t.progress}%</div>
-          <div style="font-size:12px;color:var(--text-muted)">Progress</div>
-        </div>
-      </div>
-      <div class="treatment-progress"><div class="treatment-progress-bar" style="width:${t.progress}%"></div></div>
-      <div style="font-size:13px;color:var(--text-muted);margin-top:8px">📝 ${t.notes}</div>
-      <div class="treatment-meds">${t.meds.map(m => `<span class="treatment-med-pill">💊 ${m}</span>`).join('')}</div>
-    </div>`).join('');
-}
-
-function openAddTreatmentModal() {
-  showToast('Treatment plan editor coming soon!', 'info');
-}
-
-// ─── SHOPPING LIST ─────────────────────────────
-function renderShoppingList() {
-  // Auto-add expired items not already in list
-  medicines.forEach(m => {
-    const st = getStatus(m.expiry);
-    if (st === 'expired' && !shoppingItems.find(s => s.name === m.name)) {
-      shoppingItems.unshift({ name: m.name, qty: m.qty + ' ' + m.unit, priority:'urgent', done:false });
-    }
+// ─── SHOPPING LIST ────────────────────────────────────────
+function renderShoppingList(){
+  // Auto-add expired medicines not already in list
+  medicines.forEach(m=>{
+    if(getStatus(m.expiry)==='expired'&&!shoppingItems.find(s=>s.name===m.name))
+      shoppingItems.unshift({name:m.name,notes:m.qty+' '+m.unit,done:false});
   });
-
-  const c = document.getElementById('shopping-items');
-  c.innerHTML = shoppingItems.map((item,i) => `
+  const c=document.getElementById('shopping-items');
+  if(!shoppingItems.length){c.innerHTML=`<div class="empty-state" style="padding:40px"><div class="empty-icon">🛒</div><h3>Shopping list is empty</h3><p>Add items you need to buy.</p></div>`;return}
+  c.innerHTML=shoppingItems.map((item,i)=>`
     <div class="shopping-item">
-      <div class="shopping-check ${item.done ? 'checked' : ''}" onclick="toggleShoppingItem(${i})"></div>
-      <div class="shopping-name ${item.done ? 'done' : ''}">${item.name}</div>
-      <div class="shopping-qty">${item.qty}</div>
-      <span class="shopping-priority ${item.priority}">${item.priority.toUpperCase()}</span>
+      <div class="shopping-check ${item.done?'checked':''}" onclick="toggleShop(${i})"></div>
+      <div style="flex:1">
+        <div class="shopping-name ${item.done?'done':''}">${item.name}</div>
+        ${item.notes?`<div class="shopping-qty-label">${item.notes}</div>`:''}
+      </div>
+      <div class="shopping-delete" onclick="removeShopItem(${i})" title="Remove">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3,6 5,6 21,6"/><path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6"/></svg>
+      </div>
     </div>`).join('');
 }
-
-function toggleShoppingItem(i) {
-  shoppingItems[i].done = !shoppingItems[i].done;
-  renderShoppingList();
+function toggleShop(i){shoppingItems[i].done=!shoppingItems[i].done;renderShoppingList()}
+function removeShopItem(i){shoppingItems.splice(i,1);renderShoppingList()}
+function openShopAddModal(){document.getElementById('shop-name').value='';document.getElementById('shop-notes').value='';document.getElementById('shop-add-modal-overlay').classList.add('open')}
+function saveShopItem(){
+  const name=document.getElementById('shop-name').value.trim();
+  if(!name){showToast('Enter a medicine name','error');return}
+  shoppingItems.push({name,notes:document.getElementById('shop-notes').value,done:false});
+  document.getElementById('shop-add-modal-overlay').classList.remove('open');
+  renderShoppingList();showToast('Added to shopping list!');
 }
 
-function addShoppingItem() {
-  const name = prompt('Medicine name:');
-  if (!name) return;
-  const qty = prompt('Quantity (e.g. 20 tablets):') || '—';
-  shoppingItems.push({ name, qty, priority:'normal', done:false });
-  renderShoppingList();
-  showToast('Item added to shopping list.');
+// Multi-step: add checked items to inventory one by one
+let shopQueue=[];
+let shopQueueIdx=0;
+function addCheckedToInventory(){
+  shopQueue=shoppingItems.filter(s=>s.done);
+  if(!shopQueue.length){showToast('Check at least one item first.','warn');return}
+  shopQueueIdx=0;
+  openNextShopInvModal();
 }
-
-// ─── ACTIVITY LOG ──────────────────────────────
-function renderActivityLog() {
-  const icons = { add:'➕', delete:'🗑️', update:'✏️' };
-  const colors = { add:'var(--green)', delete:'var(--red)', update:'var(--orange)' };
-  const c = document.getElementById('activity-log-body');
-  if (!activityLog.length) {
-    c.innerHTML = `<div class="empty-state"><div class="empty-icon">📝</div><h3>No activity yet</h3></div>`;
+function openNextShopInvModal(){
+  if(shopQueueIdx>=shopQueue.length){
+    // Remove processed items from shopping list
+    const processedNames=shopQueue.slice(0,shopQueueIdx).map(s=>s.name);
+    shoppingItems=shoppingItems.filter(s=>!processedNames.includes(s.name));
+    renderShoppingList();
+    showToast(`✅ ${shopQueueIdx} item(s) added to inventory!`);
     return;
   }
-  c.innerHTML = activityLog.map(a => `
-    <div class="shopping-item">
-      <div style="font-size:20px">${icons[a.type]||'•'}</div>
-      <div style="flex:1">
-        <div style="font-weight:700">${a.type.charAt(0).toUpperCase()+a.type.slice(1)}: ${a.item}</div>
-        <div style="font-size:12px;color:var(--text-muted)">${a.date}</div>
+  const item=shopQueue[shopQueueIdx];
+  document.getElementById('shop-inv-modal-title').textContent=`📦 Add to Inventory (${shopQueueIdx+1}/${shopQueue.length})`;
+  document.getElementById('shop-inv-name').value=item.name;
+  document.getElementById('shop-inv-qty').value='';
+  document.getElementById('shop-inv-expiry').value='';
+  document.getElementById('shop-inv-usefor').value='';
+  document.getElementById('shop-inv-modal-overlay').classList.add('open');
+}
+function confirmShopToInventory(){
+  const qty=document.getElementById('shop-inv-qty').value;
+  const exp=document.getElementById('shop-inv-expiry').value;
+  if(!qty||!exp){showToast('Quantity and expiry are required','error');return}
+  const snap=deepClone(medicines);
+  medicines.unshift({
+    name:document.getElementById('shop-inv-name').value,
+    qty:parseInt(qty),unit:document.getElementById('shop-inv-unit').value,
+    expiry:exp,usedFor:document.getElementById('shop-inv-usefor').value||'General'
+  });
+  pushUndo('add',document.getElementById('shop-inv-name').value,snap);
+  document.getElementById('shop-inv-modal-overlay').classList.remove('open');
+  shopQueueIdx++;
+  updateStats();renderMedCards();renderExpiryWatch();
+  setTimeout(openNextShopInvModal,300);
+}
+
+// ─── ACTIVITY LOG ─────────────────────────────────────────
+function renderActivityLog(){
+  const icons={add:'➕',delete:'🗑️',update:'✏️',clear:'🗑️'};
+  const cols={add:'var(--green)',delete:'var(--red)',update:'var(--orange)',clear:'var(--red)'};
+  const c=document.getElementById('activity-log-body');
+  if(!activityLog.length){c.innerHTML=`<div class="empty-state" style="padding:40px"><div class="empty-icon">📝</div><h3>No activity yet</h3></div>`;return}
+  c.innerHTML=activityLog.map((a,i)=>`
+    <div class="activity-item">
+      <div class="activity-icon-wrap">${icons[a.type]||'•'}</div>
+      <div class="activity-info">
+        <div class="activity-title">${a.type.charAt(0).toUpperCase()+a.type.slice(1)}: ${a.item}</div>
+        <div class="activity-date">${a.date}</div>
       </div>
-      <span class="status-badge" style="background:${colors[a.type]}1a;color:${colors[a.type]}">${a.type.toUpperCase()}</span>
+      <span class="status-badge" style="background:${cols[a.type]}1a;color:${cols[a.type]};margin-right:8px">${a.type.toUpperCase()}</span>
+      ${a.snapshot?`<button class="btn-undo" onclick="undoAction(${i})">↩️ Undo</button>`:''}
     </div>`).join('');
 }
 
-// ─── CALENDAR ──────────────────────────────────
-function renderCalendar() {
-  const now = new Date();
-  const firstDay = new Date(calYear, calMonth, 1).getDay();
-  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
-  const daysInPrev = new Date(calYear, calMonth, 0).getDate();
-  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+// ─── PHARMACIES ───────────────────────────────────────────
+function renderPharmacies(){
+  const brandColors={
+    'Mercury Drug':'#e53e3e','Watsons':'#3182ce',
+    'Rose Pharmacy':'#e91e63','Generika':'#38a169',
+    'Southstar':'#805ad5'
+  };
+  document.getElementById('pharmacy-grid').innerHTML=pharmacies.map(p=>`
+    <div class="pharmacy-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <div style="width:36px;height:36px;border-radius:8px;background:${brandColors[p.brand]||'#718096'};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🏥</div>
+        <div>
+          <div class="pharmacy-name">${p.name}</div>
+          <div class="pharmacy-brand">${p.branch}</div>
+        </div>
+      </div>
+      <div class="pharmacy-distance">📍 ${p.dist} away</div>
+      <div class="pharmacy-row"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${p.address}</div>
+      <div class="pharmacy-row"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg><span class="${p.open?'pharmacy-open':'pharmacy-closed'}">${p.hours}</span></div>
+      <div class="pharmacy-row"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.03 2.22 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>${p.phone}</div>
+      <button class="btn-directions" onclick="showToast('Opening directions for ${p.name} ${p.branch} (demo)','info')" style="margin-top:12px">🗺️ Get Directions</button>
+    </div>`).join('');
+}
 
-  document.getElementById('cal-month-label').textContent = months[calMonth] + ' ' + calYear;
-
-  let html = '';
-  for (let i = 0; i < firstDay; i++) {
-    html += `<div class="cal-day other-month">${daysInPrev - firstDay + i + 1}</div>`;
+// ─── CALENDAR ────────────────────────────────────────────
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function renderCalendar(){
+  const now=new Date();
+  const first=new Date(calYear,calMonth,1).getDay();
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const prevDays=new Date(calYear,calMonth,0).getDate();
+  document.getElementById('cal-month-label').textContent=MONTHS[calMonth]+' '+calYear;
+  let html='';
+  for(let i=0;i<first;i++)html+=`<div class="cal-day other-month">${prevDays-first+i+1}</div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const isToday=d===now.getDate()&&calMonth===now.getMonth()&&calYear===now.getFullYear();
+    const hasDose=doses.length>0&&d%3===0;
+    html+=`<div class="cal-day ${isToday?'today':''} ${hasDose?'has-dose':''}" onclick="selectDay(${d})">${d}</div>`;
   }
-  for (let d = 1; d <= daysInMonth; d++) {
-    const isToday = d === now.getDate() && calMonth === now.getMonth() && calYear === now.getFullYear();
-    const hasDose = doses.length > 0 && (d % 3 === 0 || d % 7 === 0); // demo pattern
-    html += `<div class="cal-day ${isToday?'today':''} ${hasDose?'has-dose':''}" onclick="selectDay(${d})">${d}</div>`;
-  }
-  const remaining = 42 - firstDay - daysInMonth;
-  for (let i = 1; i <= remaining; i++) html += `<div class="cal-day other-month">${i}</div>`;
-
-  document.getElementById('cal-days').innerHTML = html;
+  const rem=42-first-daysInMonth;
+  for(let i=1;i<=rem;i++)html+=`<div class="cal-day other-month">${i}</div>`;
+  document.getElementById('cal-days').innerHTML=html;
   renderDoseList();
 }
-
-function changeMonth(dir) {
-  calMonth += dir;
-  if (calMonth < 0) { calMonth = 11; calYear--; }
-  if (calMonth > 11) { calMonth = 0; calYear++; }
-  renderCalendar();
-}
-
-function selectDay(d) {
-  selectedDate = new Date(calYear, calMonth, d);
-  renderCalendar();
-}
-
-function renderDoseList() {
-  const opts = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const date = selectedDate || new Date();
-  document.getElementById('schedule-date-title').textContent =
-    `${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][date.getDay()]}, ${opts[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
-
-  const c = document.getElementById('dose-list');
-  if (!doses.length) {
-    c.innerHTML = `<div class="empty-state" style="padding:30px"><div class="empty-icon">⏰</div><h3>No doses scheduled</h3></div>`;
-    return;
-  }
-  c.innerHTML = doses.map((d,i) => `
+function changeMonth(d){calMonth+=d;if(calMonth<0){calMonth=11;calYear--}if(calMonth>11){calMonth=0;calYear++}renderCalendar()}
+function selectDay(d){selectedDate=new Date(calYear,calMonth,d);renderCalendar()}
+function renderDoseList(){
+  const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const date=selectedDate||new Date();
+  document.getElementById('schedule-date-title').textContent=`${DAYS[date.getDay()]}, ${MONTHS[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+  const c=document.getElementById('dose-list');
+  if(!doses.length){c.innerHTML=`<div class="empty-state" style="padding:30px"><div class="empty-icon">⏰</div><h3>No doses scheduled</h3></div>`;return}
+  c.innerHTML=doses.map((d,i)=>`
     <div class="dose-item">
       <div class="dose-time">${d.time}</div>
-      <div class="dose-info">
-        <div class="dose-name">${d.med}</div>
-        <div class="dose-detail">${d.amount} · ${d.freq}</div>
-      </div>
+      <div class="dose-info"><div class="dose-name">${d.med}</div><div class="dose-detail">${d.amount} · ${d.freq}</div></div>
       <div class="dose-check ${d.done?'checked':''}" onclick="toggleDose(${i})"></div>
     </div>`).join('');
 }
-
-function toggleDose(i) { doses[i].done = !doses[i].done; renderDoseList(); showToast(doses[i].done ? '✅ Dose marked as taken!' : 'Dose unmarked.', doses[i].done ? undefined : 'info'); }
-
-function openAddDoseModal() {
-  const sel = document.getElementById('dose-med');
-  sel.innerHTML = medicines.map(m => `<option>${m.name}</option>`).join('');
+function toggleDose(i){doses[i].done=!doses[i].done;renderDoseList();showToast(doses[i].done?'✅ Dose marked as taken!':'Dose unmarked.',doses[i].done?undefined:'info')}
+function openAddDoseModal(){
+  const s=document.getElementById('dose-med');
+  s.innerHTML=medicines.length?medicines.map(m=>`<option>${m.name}</option>`).join(''):'<option>No medicines added yet</option>';
   document.getElementById('dose-modal-overlay').classList.add('open');
 }
-
-function saveDose() {
-  const med = document.getElementById('dose-med').value;
-  const time = document.getElementById('dose-time').value;
-  const amount = document.getElementById('dose-amount').value || '1 tablet';
-  const freq = document.getElementById('dose-freq').value;
-  doses.push({ med, time, amount, freq, done:false });
+function saveDose(){
+  const med=document.getElementById('dose-med').value;
+  const time=document.getElementById('dose-time').value;
+  const amount=document.getElementById('dose-amount').value||'1 tablet';
+  const freq=document.getElementById('dose-freq').value;
+  doses.push({med,time,amount,freq,done:false});
   document.getElementById('dose-modal-overlay').classList.remove('open');
-  renderDoseList(); renderCalendar();
-  showToast('✅ Dose schedule added!');
+  renderDoseList();renderCalendar();showToast('✅ Dose schedule added!');
 }
 
-// ─── FILTER TOGGLE ─────────────────────────────
-function toggleFilter() {
-  document.getElementById('filter-dropdown').classList.toggle('open');
-}
-
-document.addEventListener('click', e => {
-  const fd = document.getElementById('filter-dropdown');
-  if (fd && !fd.closest && !e.target.closest('.btn-filter') && !e.target.closest('.filter-dropdown')) {
-    fd.classList.remove('open');
-  } else if (fd && fd.classList.contains('open') && !e.target.closest('.btn-filter') && !e.target.closest('.filter-dropdown')) {
-    fd.classList.remove('open');
+// ─── CLICK OUTSIDE MODAL ─────────────────────────────────
+function handleOverlayClick(e,overlayId){
+  if(e.target.id===overlayId){
+    document.getElementById(overlayId).classList.remove('open');
+    if(overlayId==='add-modal-overlay')closeAddModal();
   }
+}
+
+// ─── CLOSE DROPDOWNS ON OUTSIDE CLICK ────────────────────
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.btn-sort')&&!e.target.closest('.sort-dropdown'))
+    document.getElementById('sort-dropdown')&&document.getElementById('sort-dropdown').classList.remove('open');
+  if(!e.target.closest('.btn-filter-dash')&&!e.target.closest('.filter-dropdown'))
+    document.getElementById('filter-dropdown')&&document.getElementById('filter-dropdown').classList.remove('open');
 });
 
-// ─── GOLDEN RULES ──────────────────────────────
-function toggleGoldenRules() {
-  const c = document.getElementById('golden-rules-content');
-  const t = document.getElementById('golden-toggle-icon');
+// ─── GOLDEN RULES TOGGLE ─────────────────────────────────
+function toggleGoldenRules(){
+  const c=document.getElementById('golden-rules-content');
   c.classList.toggle('open');
-  t.textContent = c.classList.contains('open') ? '▲' : '▼';
+  document.getElementById('gr-arrow').textContent=c.classList.contains('open')?'▲':'▼';
 }
 
-// ─── TOAST ─────────────────────────────────────
-function showToast(msg, type) {
-  const tc = document.getElementById('toast-container');
-  const t = document.createElement('div');
-  t.className = 'toast' + (type === 'error' ? ' error' : type === 'info' ? ' info' : '');
-  t.textContent = msg;
-  tc.appendChild(t);
-  setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(16px)'; t.style.transition = '0.3s'; setTimeout(() => t.remove(), 350); }, 2800);
+// ─── TOAST ───────────────────────────────────────────────
+function showToast(msg,type){
+  const tc=document.getElementById('toast-container');
+  const t=document.createElement('div');
+  t.className='toast'+(type==='error'?' error':type==='info'?' info':type==='warn'?' warn':'');
+  t.textContent=msg;tc.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(16px)';t.style.transition='.3s';setTimeout(()=>t.remove(),350)},2800);
 }
 
-// ─── INIT ──────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => {
-  // Demo auto-fill for easy testing
-  document.getElementById('login-email').value = 'juandelacruz@gmail.com';
-  document.getElementById('login-password').value = 'password123';
-  // Responsive sidebar
-  if (window.innerWidth > 900) {
-    document.getElementById('sidebar').classList.remove('hidden');
-  }
+// ─── INIT ─────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('login-email').value='juandelacruz@gmail.com';
+  document.getElementById('login-password').value='demo1234';
 });
 </script>
 </body>
