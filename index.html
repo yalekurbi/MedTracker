@@ -1284,6 +1284,58 @@ function setSort(s,el){
 function toggleSort(){document.getElementById('sort-dropdown').classList.toggle('open');document.getElementById('filter-dropdown').classList.remove('open')}
 function toggleFilter(){document.getElementById('filter-dropdown').classList.toggle('open');document.getElementById('sort-dropdown').classList.remove('open')}
 
+// ─── MED UNIT ICONS ──────────────────────────────────────
+function getMedIcon(unit){
+  const u=(unit||'').toLowerCase();
+  const colors={
+    'tablets':'#3B82F6',
+    'capsules':'#8B5CF6',
+    'bottle':'#10B981',
+    'sachets':'#F59E0B',
+    'blister packs':'#EF4444',
+    'vials':'#06B6D4',
+    'pieces':'#64748B'
+  };
+  const bg=colors[u]||'#374151';
+  let inner='';
+  if(u==='tablets'){
+    // Round tablet with score line
+    inner=`<circle cx="12" cy="12" r="8" fill="none" stroke="white" stroke-width="2.2"/>
+           <line x1="4" y1="12" x2="20" y2="12" stroke="white" stroke-width="2.2"/>`;
+  } else if(u==='capsules'){
+    // Horizontal capsule split in middle
+    inner=`<rect x="3" y="8" width="18" height="8" rx="4" fill="none" stroke="white" stroke-width="2.2"/>
+           <line x1="12" y1="8" x2="12" y2="16" stroke="white" stroke-width="2.2"/>
+           <path d="M12 8 Q12 12 12 16" fill="none"/>`;
+  } else if(u==='bottle'){
+    // Medicine bottle with label line
+    inner=`<path d="M9 3h6v3l2 3v10a1 1 0 01-1 1H8a1 1 0 01-1-1V9l2-3V3z" fill="none" stroke="white" stroke-width="2"/>
+           <line x1="7" y1="13" x2="17" y2="13" stroke="white" stroke-width="2"/>`;
+  } else if(u==='sachets'){
+    // Sachet / small packet
+    inner=`<rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="white" stroke-width="2"/>
+           <line x1="3" y1="11" x2="21" y2="11" stroke="white" stroke-width="2"/>
+           <line x1="12" y1="5" x2="12" y2="11" stroke="white" stroke-width="2"/>`;
+  } else if(u==='blister packs'){
+    // Blister pack — grid of 4 bubbles
+    inner=`<rect x="2" y="3" width="20" height="18" rx="2" fill="none" stroke="white" stroke-width="2"/>
+           <circle cx="8"  cy="9"  r="2.2" fill="white"/>
+           <circle cx="16" cy="9"  r="2.2" fill="white"/>
+           <circle cx="8"  cy="15" r="2.2" fill="white"/>
+           <circle cx="16" cy="15" r="2.2" fill="white"/>`;
+  } else if(u==='vials'){
+    // Vial / test tube
+    inner=`<path d="M10 3h4M10 3v10l-3 5a1.1 1.1 0 001 1.6h8a1.1 1.1 0 001-1.6L14 13V3" fill="none" stroke="white" stroke-width="2"/>
+           <line x1="8" y1="14" x2="16" y2="14" stroke="white" stroke-width="2"/>`;
+  } else {
+    // Pieces / default — package box
+    inner=`<path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" fill="none" stroke="white" stroke-width="2"/>
+           <polyline points="3.27,6.96 12,12.01 20.73,6.96" stroke="white" stroke-width="2" fill="none"/>
+           <line x1="12" y1="22.08" x2="12" y2="12" stroke="white" stroke-width="2"/>`;
+  }
+  return`<div class="med-card-icon" style="background:${bg}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">${inner}</svg></div>`;
+}
+
 // ─── RENDER MED CARDS ────────────────────────────────────
 function renderMedCards(){
   const search=(document.getElementById('med-search').value||'').toLowerCase();
@@ -1320,7 +1372,7 @@ function renderMedCards(){
     const daysClass=days<0?'red':days<=30?'orange':'green';
     const daysLabel=days<0?`${Math.abs(days)}D OVERDUE`:days<=30?`${days}D LEFT`:days<365?`${Math.round(days/30)}MO LEFT`:`${(days/365).toFixed(1)}YR LEFT`;
     return`<div class="med-card" onclick="openMedDetail(${idx})">
-      <div class="med-card-icon"><svg width="22" height="22" fill="white" opacity=".9" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg></div>
+      ${getMedIcon(m.unit)}
       <div class="med-card-info">
         <div class="med-card-name">${m.name}</div>
         <div class="med-card-use">${m.usedFor||'—'}</div>
